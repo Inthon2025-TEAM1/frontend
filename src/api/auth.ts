@@ -138,3 +138,16 @@ export async function getPurchaseHistory(): Promise<
   const response = await authFetch("/api/user/purchase-history");
   return await response.json();
 }
+
+/**
+ * Fetch current user profile with role
+ */
+export async function getCurrentUser(): Promise<{
+  id: number;
+  email: string;
+  role: "parent" | "child" | "mentor" | null;
+  candy: number;
+}> {
+  const response = await authFetch("/api/user/me");
+  return await response.json();
+}

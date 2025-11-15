@@ -12,6 +12,7 @@ import { HomeLayout } from "./pages/HomeLayout";
 import { QuizSelectionPage } from "./pages/QuizSelectionPage";
 import { GachaPage } from "./pages/GachaPage";
 import { QuizPage } from "./pages/QuizPage";
+import { QuizResultPage } from "./pages/QuizResultPage";
 import { RewardsPage } from "./pages/RewardsPage";
 import { StorePage } from "./pages/StorePage";
 
@@ -34,9 +35,9 @@ function App() {
           <Route
             path="/initUser"
             element={
-              <PublicOnlyRoute>
+              <ProtectedRoute>
                 <InitUserPage/>
-              </PublicOnlyRoute>
+              </ProtectedRoute>
             }
           />
           {/* Public-only routes (redirect to dashboard if already logged in) */}
@@ -113,6 +114,14 @@ function App() {
           element={
             <ProtectedRoute>
               <QuizPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quiz-result"
+          element={
+            <ProtectedRoute>
+              <QuizResultPage />
             </ProtectedRoute>
           }
         />

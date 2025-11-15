@@ -18,12 +18,37 @@ export function QuizPage() {
   const { user, logout } = useAuth();
   const [answer, setAnswer] = useState("");
   const [showAnswer, setShowAnswer] = useState(false);
+  const [questionResults, setQuestionResults] = useState<
+    Array<{
+      questionNumber: number;
+      isCorrect: boolean;
+      difficulty: "하" | "중" | "상";
+      question: string;
+      userAnswer?: string;
+      correctAnswer?: string;
+      explanation?: string;
+    }>
+  >([]);
   const displayName = user?.displayName || user?.email?.split("@")[0] || "사용자";
   const candyCount = 42; // TODO: 실제 사탕 개수 가져오기
 
   // TODO: 실제 문제 데이터에서 가져오기
   const correctAnswer = "x = 2, 3";
   const explanation = "인수분해를 이용하면 (x-2)(x-3) = 0이므로 x = 2 또는 x = 3입니다.";
+  
+  // 더미 문제 데이터 (실제로는 API에서 가져와야 함)
+  const questions = [
+    { number: 1, difficulty: "중" as const, question: "x² - 5x + 6 = 0을 만족하는 x의 값을 모두 구하시오." },
+    { number: 2, difficulty: "하" as const, question: "x² - 4 = 0을 만족하는 x의 값을 모두 구하시오." },
+    { number: 3, difficulty: "상" as const, question: "2x² + 7x - 15 = 0을 만족하는 x의 값을 모두 구하시오." },
+    { number: 4, difficulty: "중" as const, question: "x² + 6x + 9 = 0을 만족하는 x의 값을 구하시오." },
+    { number: 5, difficulty: "하" as const, question: "x² - 9 = 0을 만족하는 x의 값을 모두 구하시오." },
+    { number: 6, difficulty: "상" as const, question: "3x² - 5x - 2 = 0을 만족하는 x의 값을 모두 구하시오." },
+    { number: 7, difficulty: "중" as const, question: "x² - 2x - 8 = 0을 만족하는 x의 값을 모두 구하시오." },
+    { number: 8, difficulty: "하" as const, question: "x² - 16 = 0을 만족하는 x의 값을 모두 구하시오." },
+    { number: 9, difficulty: "상" as const, question: "4x² + 4x + 1 = 0을 만족하는 x의 값을 구하시오." },
+    { number: 10, difficulty: "중" as const, question: "x² + 8x + 16 = 0을 만족하는 x의 값을 구하시오." },
+  ];
 
   const handleLogout = async () => {
     try {
@@ -37,6 +62,23 @@ export function QuizPage() {
   const handleCheckAnswer = () => {
     // 정답 확인 로직
     console.log("정답 확인:", answer);
+    const isCorrect = answer.trim().toLowerCase() === correctAnswer.toLowerCase();
+    
+    // 결과 저장
+    const currentQuestionData = questions[currentQuestion - 1];
+    setQuestionResults((prev) => [
+      ...prev,
+      {
+        questionNumber: currentQuestion,
+        isCorrect,
+        difficulty: currentQuestionData.difficulty,
+        question: currentQuestionData.question,
+        userAnswer: answer.trim() || "(미입력)",
+        correctAnswer: correctAnswer,
+        explanation: explanation,
+      },
+    ]);
+    
     setShowAnswer(true);
   };
 
@@ -48,8 +90,47 @@ export function QuizPage() {
       setAnswer(""); // 답변 초기화
       setShowAnswer(false); // 정답 표시 초기화
     } else {
-      // 퀴즈 완료 처리
-      navigate("/dashboard");
+      // 퀴즈 완료 처리 - 결과 페이지로 이동
+      const correctCount = questionResults.filter((r) => r.isCorrect).length;
+      const accuracyRate = Math.round((correctCount / totalQuestions) * 100);
+      const earnedCandy = correctCount; // TODO: 실제 사탕 계산 로직
+      
+      // 모든 문제 결과가 없으면 마지막 문제 결과 추가
+      const finalResults = questionResults.length === totalQuestions 
+        ? questionResults 
+        : [
+            ...questionResults,
+            {
+              questionNumber: currentQuestion,
+              isCorrect: false, // 정답 확인 안 했으면 false로 처리
+              difficulty: questions[currentQuestion - 1].difficulty,
+              question: questions[currentQuestion - 1].question,
+              userAnswer: answer.trim() || "(미입력)",
+              correctAnswer: correctAnswer,
+              explanation: explanation,
+            },
+          ];
+      
+      navigate("/quiz-result", {
+        state: {
+          result: {
+            accuracyRate,
+            correctCount,
+            totalCount: totalQuestions,
+            earnedCandy,
+            questions: finalResults.map((r) => ({
+              id: r.questionNumber,
+              number: r.questionNumber,
+              difficulty: r.difficulty,
+              question: r.question,
+              isCorrect: r.isCorrect,
+              userAnswer: r.userAnswer,
+              correctAnswer: r.correctAnswer,
+              explanation: r.explanation,
+            })),
+          },
+        },
+      });
     }
   };
 
@@ -117,7 +198,7 @@ export function QuizPage() {
           <div className="bg-[#f8f4ff] flex h-[400px] items-center justify-center pl-0 pr-0 py-0 relative rounded-3xl shadow-sm shrink-0 w-full">
             <div className="h-[27px] relative shrink-0 w-auto max-w-full">
               <p className="font-normal leading-[27px] left-1/2 text-[#101828] text-lg text-center whitespace-pre top-0 -translate-x-1/2 relative">
-                x² - 5x + 6 = 0을 만족하는 x의 값을 모두 구하시오.
+                {questions[currentQuestion - 1]?.question || "문제를 불러오는 중..."}
               </p>
             </div>
           </div>
@@ -134,7 +215,7 @@ export function QuizPage() {
                 </div>
                 <div className="h-6 relative shrink-0 w-auto">
                   <p className="font-semibold leading-6 text-[#fdb022] text-base whitespace-pre">
-                    중
+                    {questions[currentQuestion - 1]?.difficulty || "중"}
                   </p>
                 </div>
               </div>
@@ -161,6 +242,16 @@ export function QuizPage() {
                 >
                   <p className="font-medium leading-6 left-8 text-base text-white whitespace-pre top-[15px] absolute">
                     정답 확인
+                  </p>
+                </button>
+
+                {/* Next Question Button */}
+                <button
+                  onClick={handleNextQuestion}
+                  className="bg-emerald-500 h-14 rounded-xl shadow-sm relative w-[159.125px] hover:opacity-90 transition-opacity"
+                >
+                  <p className="font-medium leading-6 left-12 text-base text-white whitespace-pre top-[15px] absolute">
+                    다음 문제
                   </p>
                 </button>
               </div>
@@ -197,20 +288,6 @@ export function QuizPage() {
                   </p>
                 </div>
               </div>
-            </div>
-          )}
-
-          {/* Next Question Button - Centered when answer is shown */}
-          {showAnswer && (
-            <div className="flex justify-center w-full mt-8">
-              <button
-                onClick={handleNextQuestion}
-                className="bg-emerald-500 h-14 rounded-xl shadow-sm relative w-[159.125px] hover:opacity-90 transition-opacity"
-              >
-                <p className="font-medium leading-6 left-12 text-base text-white whitespace-pre top-[15px] absolute">
-                  다음 문제
-                </p>
-              </button>
             </div>
           )}
         </div>

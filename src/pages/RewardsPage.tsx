@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authFetch } from "../api/auth";
 import { getMockRewards } from "../mocks/rewardsMock";
+import { getWeaknessAnalysis } from "../api/quiz";
 
 // Mock mode toggle - set to false when backend API is ready
 const USE_MOCK_DATA = true;
@@ -22,7 +23,23 @@ interface MonthlyStats {
   correctRate: number;
 }
 
-type TabType = 'quiz' | 'rewards';
+interface Weakness {
+  category: string;
+  chapterId: number;
+  problemCount: number;
+  accuracyRate: number;
+  commonMistakes: string[];
+  priority: 'high' | 'medium' | 'low';
+}
+
+interface AnalysisResult {
+  weaknesses: Weakness[];
+  recommendations: string[];
+  overallScore: number;
+  improvementAreas: string[];
+}
+
+type TabType = 'quiz' | 'rewards' | 'analysis';
 
 export function RewardsPage() {
   const navigate = useNavigate();
@@ -37,6 +54,8 @@ export function RewardsPage() {
   );
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('rewards');
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
 
   useEffect(() => {
     const fetchRewards = async () => {
@@ -67,6 +86,25 @@ export function RewardsPage() {
 
     fetchRewards();
   }, [selectedMonth]);
+
+  useEffect(() => {
+    const fetchAnalysis = async () => {
+      if (activeTab !== 'analysis') return;
+      
+      try {
+        setAnalysisLoading(true);
+        const result = await getWeaknessAnalysis();
+        setAnalysis(result);
+      } catch (error) {
+        console.error("Failed to fetch analysis:", error);
+        setAnalysis(null);
+      } finally {
+        setAnalysisLoading(false);
+      }
+    };
+
+    fetchAnalysis();
+  }, [activeTab]);
 
   const handleMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedMonth(event.target.value);
@@ -189,6 +227,19 @@ export function RewardsPage() {
         >
           풀이 내역
           {activeTab === 'quiz' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"></div>
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab('analysis')}
+          className={`px-6 py-3 font-semibold text-lg transition-colors relative ${
+            activeTab === 'analysis'
+              ? 'text-indigo-600'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          상세분석
+          {activeTab === 'analysis' && (
             <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"></div>
           )}
         </button>
@@ -373,6 +424,166 @@ export function RewardsPage() {
                 });
               })()}
             </div>
+          )}
+        </div>
+      )}
+
+      {/* AI Analysis Tab */}
+      {activeTab === 'analysis' && (
+        <div className="flex flex-col gap-4 w-full">
+          <h2 className="font-bold text-2xl text-gray-900">AI 학습 분석 리포트</h2>
+
+          {analysisLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            </div>
+          ) : !analysis ? (
+            <div className="bg-gray-50 rounded-xl p-12 text-center">
+              <p className="text-gray-500 text-lg">
+                분석할 풀이 내역이 없습니다. 문제를 풀어보세요!
+              </p>
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors"
+              >
+                문제 풀러 가기
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Overall Score Card */}
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 shadow-sm border border-indigo-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-indigo-600 font-medium text-sm mb-2">전체 학습 점수</p>
+                    <p className="text-5xl font-bold text-indigo-900">
+                      {analysis.overallScore.toFixed(1)}
+                      <span className="text-2xl ml-2">점</span>
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-indigo-600 font-medium text-sm mb-2">개선 영역</p>
+                    <p className="text-2xl font-bold text-indigo-900">
+                      {analysis.improvementAreas.length}개
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Weaknesses by Chapter */}
+              <div className="flex flex-col gap-6">
+                <h3 className="font-bold text-xl text-gray-900">챕터별 약점 분석</h3>
+                
+                {analysis.weaknesses.length === 0 ? (
+                  <div className="bg-gray-50 rounded-xl p-8 text-center">
+                    <p className="text-gray-500">약점이 없습니다. 잘하고 있습니다!</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {analysis.weaknesses.map((weakness) => {
+                      const getPriorityColor = (priority: string) => {
+                        switch (priority) {
+                          case 'high':
+                            return 'bg-red-100 text-red-700 border-red-300';
+                          case 'medium':
+                            return 'bg-yellow-100 text-yellow-700 border-yellow-300';
+                          case 'low':
+                            return 'bg-green-100 text-green-700 border-green-300';
+                          default:
+                            return 'bg-gray-100 text-gray-700 border-gray-300';
+                        }
+                      };
+
+                      const getPriorityLabel = (priority: string) => {
+                        switch (priority) {
+                          case 'high':
+                            return '높음';
+                          case 'medium':
+                            return '보통';
+                          case 'low':
+                            return '낮음';
+                          default:
+                            return priority;
+                        }
+                      };
+
+                      return (
+                        <div
+                          key={weakness.chapterId}
+                          className="bg-white border rounded-xl p-6 shadow-sm hover:shadow-md transition-all"
+                        >
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h4 className="font-bold text-xl text-gray-900 mb-1">
+                                {weakness.category}
+                              </h4>
+                              <p className="text-gray-500 text-sm">
+                                틀린 문제: {weakness.problemCount}개
+                              </p>
+                            </div>
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-semibold border ${getPriorityColor(weakness.priority)}`}
+                            >
+                              {getPriorityLabel(weakness.priority)}
+                            </span>
+                          </div>
+
+                          <div className="mb-4">
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="text-sm text-gray-600">정확도</span>
+                              <span className="font-bold text-lg text-gray-900">
+                                {weakness.accuracyRate.toFixed(1)}%
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full ${
+                                  weakness.accuracyRate >= 70
+                                    ? 'bg-green-500'
+                                    : weakness.accuracyRate >= 50
+                                    ? 'bg-yellow-500'
+                                    : 'bg-red-500'
+                                }`}
+                                style={{ width: `${weakness.accuracyRate}%` }}
+                              ></div>
+                            </div>
+                          </div>
+
+                          {weakness.commonMistakes.length > 0 && (
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                              <p className="text-sm font-semibold text-gray-700 mb-2">자주 틀리는 패턴:</p>
+                              <ul className="space-y-1">
+                                {weakness.commonMistakes.map((mistake, index) => (
+                                  <li key={index} className="text-sm text-gray-600 flex items-start">
+                                    <span className="text-red-500 mr-2">•</span>
+                                    <span>{mistake}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Recommendations */}
+              <div className="flex flex-col gap-4">
+                <h3 className="font-bold text-xl text-gray-900">AI 학습 추천</h3>
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                  <ul className="space-y-3">
+                    {analysis.recommendations.map((recommendation, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-blue-500 mr-3 mt-1">💡</span>
+                        <span className="text-gray-700">{recommendation}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </>
           )}
         </div>
       )}
