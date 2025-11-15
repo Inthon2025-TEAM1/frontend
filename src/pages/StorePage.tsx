@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   storeItems,
@@ -8,12 +8,25 @@ import {
   type ItemCategory,
   type StoreItem,
 } from "../mocks/storeMock";
+import { fetchCandyCount } from "../api/auth";
 
 export function StorePage() {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<ItemCategory>('cafe');
-  const [userCandy, setUserCandy] = useState(150); // Mock user candy (나중에 실제 데이터로 대체)
+  const [userCandy, setUserCandy] = useState(0);
   const [ownedItems, setOwnedItems] = useState<Set<string>>(new Set()); // 구매한 아이템 ID
+
+  useEffect(() => {
+    const loadCandyCount = async () => {
+      try {
+        const data = await fetchCandyCount();
+        setUserCandy(data.candy);
+      } catch (error) {
+        console.error("Failed to fetch candy count:", error);
+      }
+    };
+    loadCandyCount();
+  }, []);
 
   // 카테고리별 아이템 필터링
   const filteredItems = storeItems.filter(

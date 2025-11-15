@@ -3,10 +3,25 @@ import { useAuth } from "../hooks/useAuth";
 import { ProfileHeader } from "../components/dashboard/ProfileHeader";
 import { CharacterGachaBanner } from "../components/dashboard/CharacterGachaBanner";
 import { QuizCategoryCard } from "../components/dashboard/QuizCategoryCard";
+import { fetchCandyCount } from "../api/auth";
+import { useEffect, useState } from "react";
 
 export function DashboardPage() {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const [candyCount, setCandyCount] = useState(0);
+
+  useEffect(() => {
+    const loadCandyCount = async () => {
+      try {
+        const data = await fetchCandyCount();
+        setCandyCount(data.candy);
+      } catch (error) {
+        console.error("Failed to fetch candy count:", error);
+      }
+    };
+    loadCandyCount();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -59,7 +74,7 @@ export function DashboardPage() {
   return (
     <div className="bg-white box-border flex flex-col gap-8 items-start pb-[400px] pt-8 px-8 relative min-h-[calc(100vh+400px)] w-full">
       {/* Profile Header */}
-      <ProfileHeader candyCount={42} onLogout={handleLogout} />
+      <ProfileHeader candyCount={candyCount} onLogout={handleLogout} />
 
       {/* Character Gacha Banner */}
       <CharacterGachaBanner onNavigate={handleGachaNavigate} />
