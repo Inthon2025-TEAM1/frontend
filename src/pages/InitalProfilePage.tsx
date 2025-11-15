@@ -7,7 +7,6 @@ type UserRole = "parent" | "child" | "mentor" | null;
 
 export function InitUserPage() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
   const [selectedRole, setSelectedRole] = useState<UserRole>(null);
   // get Profile api 호출해야함.
 
@@ -54,18 +53,10 @@ export function InitUserPage() {
               <h2 className="mb-4 text-2xl font-bold text-gray-900">
                 환영합니다! 🎉
               </h2>
-              <div className="space-y-2 text-gray-700">
-                <p>
-                  <span className="font-medium">이메일:</span> {user?.email}
-                </p>
-                <p>
-                  <span className="font-medium">사용자 ID:</span> {user?.uid}
-                </p>
-                <p>
-                  <span className="font-medium">이메일 인증:</span>{" "}
-                  {user?.emailVerified ? "✅ 인증됨" : "❌ 미인증"}
-                </p>
-              </div>
+              <p className="text-gray-700">
+                EduPlay에 가입해주셔서 감사합니다. 먼저, 서비스를 이용하실 역할을
+                선택해주세요.
+              </p>
             </div>
 
             {/* 역할 선택 UI */}

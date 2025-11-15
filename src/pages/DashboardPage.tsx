@@ -15,73 +15,23 @@ interface Chapter {
   gradeLevel?: number;
 }
 
+interface QuizCategory {
+  id: number;
+  title: string;
+  description: string;
+  difficulty: "하" | "중" | "상";
+  problemCount: number;
+  color: "purple" | "green" | "orange" | "red" | "blue" | "indigo" | "teal" | "cyan" | "pink" | "amber" | "violet" | "rose";
+  grade: string;
+}
+
 export function DashboardPage() {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [selectedGrade, setSelectedGrade] = useState<string>("전체");
   const [chapters, setChapters] = useState<Array<Chapter>>([])
+  const [quizCategories, setQuizCategories] = useState<Array<QuizCategory>>([])
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        if (selectedGrade === "전체") {
-          // 전체 선택 시 1, 2, 3학년 모두 호출
-          const [grade1Res, grade2Res, grade3Res] = await Promise.all([
-            authFetch(`/api/quiz/chapters?gradeLevel=1`, { method: "GET" }),
-            authFetch(`/api/quiz/chapters?gradeLevel=2`, { method: "GET" }),
-            authFetch(`/api/quiz/chapters?gradeLevel=3`, { method: "GET" }),
-          ]);
-
-          const [grade1Data, grade2Data, grade3Data] = await Promise.all([
-            grade1Res.json(),
-            grade2Res.json(),
-            grade3Res.json(),
-          ]);
-
-          // 모든 학년의 데이터를 합침
-          const allChapters = [
-            ...(Array.isArray(grade1Data) ? grade1Data : []),
-            ...(Array.isArray(grade2Data) ? grade2Data : []),
-            ...(Array.isArray(grade3Data) ? grade3Data : []),
-          ];
-          setChapters(allChapters);
-        } else {
-          // 특정 학년 선택 시 해당 학년만 호출
-          const gradeLevel = parseInt(selectedGrade.replace("학년", ""));
-          const res = await authFetch(`/api/quiz/chapters?gradeLevel=${gradeLevel}`, {
-            method: "GET",
-          });
-          const data = await res.json();
-          setChapters(Array.isArray(data) ? data : []);
-        }
-      } catch (error) {
-        console.error("Failed to fetch chapters:", error);
-        setChapters([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [selectedGrade])
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-
-  const handleGachaNavigate = () => {
-    navigate("/gacha");
-  };
-
-  const handleStartQuiz = (chapterId: number, chapterName: string) => {
-    navigate(`/quiz?chapterId=${chapterId}&chapterName=${encodeURIComponent(chapterName)}`);
-  };
 
   // 색상 배열 (순환 사용)
   const colors: Array<
@@ -125,21 +75,97 @@ export function DashboardPage() {
     return `${gradeLevel}학년`;
   };
 
-  // API 데이터를 카드 props로 변환
-  const quizCategories = chapters.map((chapter, index) => ({
-    id: chapter.id,
-    title: chapter.chapterName,
-    description: chapter.chapterDescription || `${chapter.chapterName}의 개념을 이해하고 다양한 문제를 풀어보세요.`,
-    difficulty: getDifficulty(chapter.chapterOrder),
-    problemCount: 10, // 고정값 (필요시 API에서 가져올 수 있음)
-    color: colors[index % colors.length],
-    grade: getGradeDisplay(chapter.gradeLevel),
-  }));
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        let fetchedChapters: Chapter[] = [];
+
+        if (selectedGrade === "전체") {
+          // 전체 선택 시 1, 2, 3학년 모두 호출
+          const [grade1Res, grade2Res, grade3Res] = await Promise.all([
+            authFetch(`/api/quiz/chapters?gradeLevel=1`, { method: "GET" }),
+            authFetch(`/api/quiz/chapters?gradeLevel=2`, { method: "GET" }),
+            authFetch(`/api/quiz/chapters?gradeLevel=3`, { method: "GET" }),
+          ]);
+
+          const [grade1Data, grade2Data, grade3Data] = await Promise.all([
+            grade1Res.json(),
+            grade2Res.json(),
+            grade3Res.json(),
+          ]);
+
+          // 모든 학년의 데이터를 합침
+          fetchedChapters = [
+            ...(Array.isArray(grade1Data) ? grade1Data : []),
+            ...(Array.isArray(grade2Data) ? grade2Data : []),
+            ...(Array.isArray(grade3Data) ? grade3Data : []),
+          ];
+        } else {
+          // 특정 학년 선택 시 해당 학년만 호출
+          const gradeLevel = parseInt(selectedGrade.replace("학년", ""));
+          const res = await authFetch(`/api/quiz/chapters?gradeLevel=${gradeLevel}`, {
+            method: "GET",
+          });
+          const data = await res.json();
+          console.log('data',data)
+          fetchedChapters = Array.isArray(data) ? data : [];
+        }
+
+        setChapters(fetchedChapters);
+
+        // 각 챕터에 대해 퀴즈 API 호출
+        const categoryPromises = fetchedChapters.map(async (chapter, index) => {
+          const response = await authFetch(`/api/quiz?chapterId=${chapter.id}`, {
+            method: "GET",
+          });
+          const data = await response.json();
+
+          return {
+            id: chapter.id,
+            title: chapter.chapterName,
+            description: chapter.chapterDescription || `${chapter.chapterName}의 개념을 이해하고 다양한 문제를 풀어보세요.`,
+            difficulty: getDifficulty(chapter.chapterOrder),
+            problemCount: Array.isArray(data) ? data.length : 10,
+            color: colors[index % colors.length],
+            grade: getGradeDisplay(chapter.gradeLevel),
+          };
+        });
+
+        // 모든 API 호출이 완료될 때까지 기다림
+        const categories = await Promise.all(categoryPromises);
+        setQuizCategories(categories);
+      } catch (error) {
+        console.error("Failed to fetch chapters:", error);
+        setChapters([]);
+        setQuizCategories([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedGrade])
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  const handleGachaNavigate = () => {
+    navigate("/gacha");
+  };
+
+  const handleStartQuiz = (chapterId: number, chapterName: string) => {
+    navigate(`/quiz?chapterId=${chapterId}&chapterName=${encodeURIComponent(chapterName)}`);
+  };
 
   return (
     <div className="bg-white box-border flex flex-col gap-8 items-start pb-[120px] pt-8 px-8 relative min-h-[calc(100vh+120px)] w-full">
       {/* Profile Header */}
-      <ProfileHeader candyCount={42} onLogout={handleLogout} />
 
       {/* Character Gacha Banner */}
       <CharacterGachaBanner onNavigate={handleGachaNavigate} />

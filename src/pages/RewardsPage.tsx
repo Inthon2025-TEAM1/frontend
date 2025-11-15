@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authFetch } from "../api/auth";
 import { getMockRewards } from "../mocks/rewardsMock";
+import { InlineMath } from "react-katex";
 
 // Mock mode toggle - set to false when backend API is ready
 const USE_MOCK_DATA = false;
@@ -24,6 +25,8 @@ interface MonthlyStats {
 
 type TabType = 'quiz' | 'rewards';
 
+
+
 export function RewardsPage() {
   const navigate = useNavigate();
   const [attempts, setAttempts] = useState<QuizAttempt[]>([]);
@@ -32,6 +35,16 @@ export function RewardsPage() {
     totalRewards: 0,
     correctRate: 0,
   });
+  const renderMath = (text: string) => {
+    const parts = text.split(/(\$[^$]+\$)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('$') && part.endsWith('$')) {
+        const formula = part.slice(1, -1);
+        return <InlineMath key={index} math={formula} />;
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
   const [selectedMonth, setSelectedMonth] = useState<string>(
     new Date().toISOString().slice(0, 7) // YYYY-MM format
   );
@@ -51,12 +64,45 @@ export function RewardsPage() {
         } else {
           // 실제 API 호출
           const response = await authFetch(
-            `/api/child/rewards?month=${selectedMonth}`
+            `/api/user/rewards?month=${selectedMonth}`
           );
           const data = await response.json();
+          console.log('API Response:', data);
 
-          setAttempts(data.attempts || []);
-          setMonthlyStats(data.stats || { totalSolved: 0, totalRewards: 0, correctRate: 0 });
+          // API 응답 데이터 매핑
+          const mappedAttempts: QuizAttempt[] = (data.attempts || []).map((attempt: any) => {
+            let questionTitle = '제목 없음';
+            if (typeof attempt.questionTitle === 'string') {
+              questionTitle = attempt.questionTitle;
+            } else if (typeof attempt.questionTitle === 'object' && attempt.questionTitle !== null) {
+              // questionTitle이 객체일 경우 text 속성 추출
+              questionTitle = attempt.questionTitle.text || attempt.questionTitle.title || JSON.stringify(attempt.questionTitle);
+            }
+
+            return {
+              id: String(attempt.id),
+              quizId: String(attempt.quizId),
+              questionTitle: renderMath(questionTitle),
+              selectedChoice: attempt.selectedChoice || '',
+              isCorrect: attempt.isCorrect || false,
+              rewardCandy: attempt.rewardCandy || 0,
+              createdAt: attempt.createdAt || new Date().toISOString(),
+            };
+          });
+
+          // 통계 데이터 매핑
+          const stats = data.stats || {};
+          const totalSolved = stats.totalAttempts || mappedAttempts.length;
+          const totalRewards = stats.totalCandyEarned || mappedAttempts.reduce((sum, attempt) => sum + attempt.rewardCandy, 0);
+          const correctCount = stats.correctCount || mappedAttempts.filter(attempt => attempt.isCorrect).length;
+          const correctRate = totalSolved > 0 ? (correctCount / totalSolved) * 100 : 0;
+
+          setAttempts(mappedAttempts);
+          setMonthlyStats({
+            totalSolved,
+            totalRewards,
+            correctRate,
+          });
         }
       } catch (error) {
         console.error("Failed to fetch rewards:", error);
