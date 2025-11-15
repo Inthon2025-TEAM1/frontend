@@ -84,8 +84,14 @@ export function DashboardPage() {
             </div>
             <div className="flex items-center space-x-4">
               <button
+                onClick={() => navigate("/quiz-selection")}
+                className="text-gray-700 hover:text-gray-900 font-medium"
+              >
+                퀴즈 선택
+              </button>
+              <button
                 onClick={() => navigate("/profile")}
-                className="text-gray-700 hover:text-gray-900"
+                className="text-gray-700 hover:text-gray-900 font-medium"
               >
                 프로필
               </button>

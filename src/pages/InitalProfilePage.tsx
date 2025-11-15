@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
+import axios from "axios";
+import { postWithAuth } from "../api/auth";
 
 type UserRole = "parent" | "child" | "mentor" | null;
 
@@ -25,14 +27,14 @@ export function InitUserPage() {
     setSelectedRole(role);
   };
 
-  const handleRoleSubmit = () => {
+  const handleRoleSubmit = async () => {
     if (!selectedRole) {
       alert("역할을 선택해주세요.");
       return;
     }
-
-    // TODO: API 연결 시 여기서 서버로 역할 정보 전송
-    console.log("선택된 역할:", selectedRole);
+    // console.log(await axios.post("api/auth/register", {role:selectedRole}))
+    console.log(await postWithAuth("api/auth/register", {role:selectedRole}))
+    
   }
 
 
@@ -51,30 +53,8 @@ export function InitUserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-bold text-gray-900">대시보드</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate("/profile")}
-                className="text-gray-700 hover:text-gray-900"
-              >
-                프로필
-              </button>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-              >
-                로그아웃
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
 
+      <button onClick={handleLogout}>logout</button>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white rounded-lg shadow p-6 space-y-6">

@@ -44,7 +44,6 @@ export async function authFetch(
       headers[key] = value;
     });
   }
-
   // 2) Get current user's ID token
   const user = auth.currentUser;
   if (user) {

@@ -8,6 +8,7 @@ import { ProfilePage } from "./pages/ProfilePage";
 import { HomePage } from "./pages/HomePage";
 import { InitUserPage } from "./pages/InitalProfilePage";
 import { HomeLayout } from "./pages/HomeLayout";
+import { QuizSelectionPage } from "./pages/QuizSelectionPage";
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
 
         <Route path="/" element={<HomeLayout/>}>
           <Route
-            path="/home"
+            path="/"
             element={
               <PublicOnlyRoute>
                 <HomePage />
@@ -65,6 +66,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quiz-selection"
+            element={
+              <ProtectedRoute>
+                <QuizSelectionPage />
               </ProtectedRoute>
             }
           />

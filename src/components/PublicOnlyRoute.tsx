@@ -21,10 +21,7 @@ export function PublicOnlyRoute({ children }: PublicOnlyRouteProps) {
     );
   }
 
-  // // Redirect to dashboard if already authenticated
-  // if (user) {
-  //   return <Navigate to="/dashboard" replace />;
-  // }
+
 
   // Render public content if not authenticated
   return <>{children}</>;
