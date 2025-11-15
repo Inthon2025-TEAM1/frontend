@@ -380,8 +380,12 @@ export interface WeaknessAnalysisResponse {
   improvementAreas: string[];
 }
 
-export async function getWeaknessAnalysis(): Promise<WeaknessAnalysisResponse> {
-  const response = await authFetch("/api/ai/analyze-weakness", {
+export async function getWeaknessAnalysis(month?: string): Promise<WeaknessAnalysisResponse> {
+  const url = month 
+    ? `/api/ai/analyze-weakness?month=${month}`
+    : "/api/ai/analyze-weakness";
+  
+  const response = await authFetch(url, {
     method: "GET",
   });
 
