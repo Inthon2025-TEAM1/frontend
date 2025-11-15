@@ -2,24 +2,43 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getWeaknessAnalysis,
+  getChildren,
   type WeaknessAnalysisResponse,
   type Weakness,
+  type Child,
 } from "../../api/auth";
 
 export function ParentLearningReportPage() {
   const navigate = useNavigate();
   const [analysisData, setAnalysisData] = useState<WeaknessAnalysisResponse | null>(null);
+  const [children, setChildren] = useState<Child[]>([]);
+  const [selectedChild, setSelectedChild] = useState<Child | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Load children list on mount
   useEffect(() => {
-    loadAnalysis();
+    loadChildren();
   }, []);
 
-  const loadAnalysis = async () => {
+  const loadChildren = async () => {
     try {
       setLoading(true);
-      const data = await getWeaknessAnalysis();
+      const childrenData = await getChildren();
+      setChildren(childrenData);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to load children:", err);
+      setError(err instanceof Error ? err.message : "자녀 목록을 불러오는데 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadAnalysis = async (childId: number) => {
+    try {
+      setLoading(true);
+      const data = await getWeaknessAnalysis(childId);
       setAnalysisData(data);
       setError(null);
     } catch (err) {
@@ -30,18 +49,24 @@ export function ParentLearningReportPage() {
     }
   };
 
-  if (loading) {
+  const handleChildSelect = (child: Child) => {
+    setSelectedChild(child);
+    loadAnalysis(child.id);
+  };
+
+  // Show loading spinner during initial children load
+  if (loading && children.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-xl text-gray-600">분석 중...</p>
+          <p className="text-xl text-gray-600">자녀 목록을 불러오는 중...</p>
         </div>
       </div>
     );
   }
 
-  if (error) {
+  if (error && children.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
@@ -58,6 +83,102 @@ export function ParentLearningReportPage() {
     );
   }
 
+  // Show child selection screen if no child is selected yet
+  if (!selectedChild) {
+    return (
+      <div className="bg-gray-50 min-h-screen p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <button
+              onClick={() => navigate("/parent/dashboard")}
+              className="mb-4 text-purple-600 hover:text-purple-700 font-semibold flex items-center gap-2"
+            >
+              ← 대시보드로 돌아가기
+            </button>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              📊 학습 리포트
+            </h1>
+            <p className="text-lg text-gray-600">
+              분석을 볼 자녀를 선택해주세요
+            </p>
+          </div>
+
+          {children.length === 0 ? (
+            <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+              <div className="text-6xl mb-4">👶</div>
+              <p className="text-xl text-gray-600 mb-6">등록된 자녀가 없습니다.</p>
+              <button
+                onClick={() => navigate("/parent/dashboard")}
+                className="px-6 py-3 text-white bg-purple-600 rounded-lg hover:bg-purple-700"
+              >
+                대시보드로 돌아가기
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {children.map((child) => (
+                <button
+                  key={child.id}
+                  onClick={() => handleChildSelect(child)}
+                  className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                      {child.name ? child.name.charAt(0).toUpperCase() : "?"}
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900">{child.name || "이름 없음"}</h3>
+                      <p className="text-gray-600">{child.email || "이메일 없음"}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                    <span className="text-gray-600">캔디</span>
+                    <span className="text-2xl font-bold text-purple-600">🍬 {child.candy ?? 0}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading during analysis
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-xl text-gray-600">{selectedChild.name}님의 분석 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="mb-4 text-6xl">⚠️</div>
+          <p className="mb-4 text-xl text-red-600">{error}</p>
+          <button
+            onClick={() => setSelectedChild(null)}
+            className="px-6 py-3 text-white bg-purple-600 rounded-lg hover:bg-purple-700 mr-4"
+          >
+            자녀 선택으로 돌아가기
+          </button>
+          <button
+            onClick={() => navigate("/parent/dashboard")}
+            className="px-6 py-3 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
+          >
+            대시보드로 돌아가기
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!analysisData) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -65,8 +186,14 @@ export function ParentLearningReportPage() {
           <div className="mb-4 text-6xl">📊</div>
           <p className="mb-4 text-xl text-gray-600">분석 데이터가 없습니다.</p>
           <button
+            onClick={() => setSelectedChild(null)}
+            className="px-6 py-3 text-white bg-purple-600 rounded-lg hover:bg-purple-700 mr-4"
+          >
+            자녀 선택으로 돌아가기
+          </button>
+          <button
             onClick={() => navigate("/parent/dashboard")}
-            className="px-6 py-3 text-white bg-purple-600 rounded-lg hover:bg-purple-700"
+            className="px-6 py-3 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
           >
             대시보드로 돌아가기
           </button>
@@ -99,16 +226,16 @@ export function ParentLearningReportPage() {
         {/* Header */}
         <div className="mb-8">
           <button
-            onClick={() => navigate("/parent/dashboard")}
+            onClick={() => setSelectedChild(null)}
             className="mb-4 text-purple-600 hover:text-purple-700 font-semibold flex items-center gap-2"
           >
-            ← 대시보드로 돌아가기
+            ← 자녀 선택으로 돌아가기
           </button>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            📊 학습 리포트
+            📊 학습 리포트 - {selectedChild.name}
           </h1>
           <p className="text-lg text-gray-600">
-            자녀의 학습 현황과 약점을 분석한 결과입니다
+            {selectedChild.name}님의 학습 현황과 약점을 분석한 결과입니다
           </p>
         </div>
 
@@ -239,10 +366,16 @@ export function ParentLearningReportPage() {
         {/* Action Buttons */}
         <div className="mt-8 flex gap-4 justify-center">
           <button
-            onClick={loadAnalysis}
+            onClick={() => loadAnalysis(selectedChild.id)}
             className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl"
           >
             🔄 다시 분석하기
+          </button>
+          <button
+            onClick={() => setSelectedChild(null)}
+            className="px-8 py-4 bg-purple-100 text-purple-700 rounded-xl font-bold text-lg hover:bg-purple-200 transition-colors"
+          >
+            다른 자녀 선택
           </button>
           <button
             onClick={() => navigate("/parent/dashboard")}

@@ -4,6 +4,7 @@ import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
 import { authFetch, postWithAuth } from "../api/auth";
 import { useAuth } from "../contexts/AuthContext";
+import Confetti from 'react-confetti';
 
 export interface Question {
   grade?: number;
@@ -68,6 +69,8 @@ export function QuizPage() {
   const [isWrongAnimation, setIsWrongAnimation] = useState(false);
   const [showWrongMark, setShowWrongMark] = useState(false);
   const [history, setHistory] = useState<HistoryType[]>([]);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [recycle, setRecycle] = useState(false);
 
   useEffect(() => {
     const fetchQuizData = async () => {
@@ -107,7 +110,7 @@ export function QuizPage() {
   const questionText = currentQuestionData?.question?.text || "";
   const choices = currentQuestionData?.choices || [];
 
-  const handleCheckAnswer = () => {
+  const handleCheckAnswer = async () => {
     if (!answer) return;
     // @CurrentUserId() userId: number,
     // @Body('quizId') quizId: number,
@@ -115,12 +118,35 @@ export function QuizPage() {
     const isCorrect = answer === correctAnswer;
     if(!history[currentQuestion]){
        setHistory(prev => [...prev, { questionIndex: currentQuestion, selectedAnswer: answer, isCorrect }]);
-        postWithAuth("/api/quiz/submit", {quizId: quizData[currentQuestion].id, answer, userId: user?.uid })
+        const res = await postWithAuth("/api/quiz/submit", {quizId: quizData[currentQuestion].id, answer, userId: user?.uid })
+        console.log(res, 'result of answer submission')
+
+        // rewardCandy가 0보다 크면 confetti 실행
+        if (res.rewardCandy > 0) {
+          console.log('Starting confetti animation')
+          setShowConfetti(true);
+          setRecycle(true);
+
+          const FIRE_DURATION = 1000;   // 새 confetti 뿌리는 시간 (1초)
+          const TOTAL_DURATION = 4000;  // 전체 애니메이션 유지 시간 (4초)
+
+          // FIRE_DURATION 후 새 confetti 생성 중단
+          setTimeout(() => {
+            console.log('Stopping new confetti generation');
+            setRecycle(false);
+          }, FIRE_DURATION);
+
+          // TOTAL_DURATION 후 완전히 제거
+          setTimeout(() => {
+            console.log('Removing confetti');
+            setShowConfetti(false);
+            setRecycle(false); // 초기화
+          }, TOTAL_DURATION);
+        }
       }
 
     if (isCorrect) {
       // 정답: 초록색 페이드 아웃 애니메이션 후 다음 문제
-
 
       setIsCorrectAnimation(true);
 
@@ -269,6 +295,47 @@ export function QuizPage() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-linear-to-br from-indigo-50 via-white to-purple-50">
+      {/* Confetti 효과 */}
+      {showConfetti && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9999 }}>
+          {/* 왼쪽 아래에서 발사 */}
+          <Confetti
+            width={window.innerWidth}
+            height={window.innerHeight}
+            confettiSource={{
+              x: 0,
+              y: window.innerHeight - 50,
+              w: 100,
+              h: 10
+            }}
+            initialVelocityX={{ min: 5, max: 30 }}
+            initialVelocityY={{ min: -35, max: -20 }}
+            gravity={0.15}
+            numberOfPieces={recycle ? 100 : 0}
+            recycle={recycle}
+            tweenDuration={3000}
+            colors={['#FFD700', '#FFA500', '#FF69B4', '#00CED1', '#9370DB', '#FF6347']}
+          />
+          {/* 오른쪽 아래에서 발사 */}
+          <Confetti
+            width={window.innerWidth}
+            height={window.innerHeight}
+            confettiSource={{
+              x: window.innerWidth - 100,
+              y: window.innerHeight - 50,
+              w: 100,
+              h: 10
+            }}
+            initialVelocityX={{ min: -30, max: -5 }}
+            initialVelocityY={{ min: -35, max: -20 }}
+            gravity={0.15}
+            numberOfPieces={recycle ? 100 : 0}
+            recycle={recycle}
+            tweenDuration={3000}
+            colors={['#FFD700', '#FFA500', '#FF69B4', '#00CED1', '#9370DB', '#FF6347']}
+          />
+        </div>
+      )}
       <div className="flex flex-1 max-h-screen gap-4 p-4">
         {/* 메인 컨텐츠 */}
         <div className="flex flex-col flex-1 overflow-hidden">

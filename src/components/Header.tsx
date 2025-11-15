@@ -30,30 +30,30 @@ export function Header() {
 
   return (
     <header className="bg-white shadow-sm">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+      <nav className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <h1 className="text-2xl font-bold text-indigo-600">EduPlay</h1>
           </Link>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="items-center hidden space-x-8 md:flex">
             <Link
               to="/dashboard"
-              className="text-gray-700 hover:text-indigo-600 font-medium"
+              className="font-medium text-gray-700 hover:text-indigo-600"
             >
-              홈
+              대시보드
             </Link>
             <Link
               to="/rewards"
-              className="text-gray-700 hover:text-indigo-600 font-medium"
+              className="font-medium text-gray-700 hover:text-indigo-600"
             >
               리워드
             </Link>
             <Link
               to="/store"
-              className="text-gray-700 hover:text-indigo-600 font-medium"
+              className="font-medium text-gray-700 hover:text-indigo-600"
             >
               상점
             </Link>
@@ -66,7 +66,7 @@ export function Header() {
             <>
               <span className="text-gray-700">안녕하세요, {user.displayName}님</span>
               <button
-                className="text-gray-700 hover:text-indigo-600 font-medium"
+                className="font-medium text-gray-700 hover:text-indigo-600"
                 onClick={handleLogout}
               >
                 로그아웃
@@ -77,14 +77,14 @@ export function Header() {
             <>
               <Link
                 to="/login"
-                className="text-gray-700 hover:text-indigo-600 font-medium"
+                className="font-medium text-gray-700 hover:text-indigo-600"
               >
                 로그인
               </Link>
 
               <Link
                 to="/register"
-                className="px-6 py-2 bg-indigo-600 text-white rounded-full font-semibold hover:bg-indigo-700 transition-colors shadow-sm"
+                className="px-6 py-2 font-semibold text-white transition-colors bg-indigo-600 rounded-full shadow-sm hover:bg-indigo-700"
               >
                 회원가입
               </Link>

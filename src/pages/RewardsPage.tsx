@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { authFetch, getWeaknessAnalysis, type WeaknessAnalysisResponse, type Weakness } from "../api/auth";
 import { getMockRewards } from "../mocks/rewardsMock";
+import { InlineMath } from "react-katex";
 
 // Mock mode toggle - set to false when backend API is ready
 const USE_MOCK_DATA = false;
@@ -24,6 +25,8 @@ interface MonthlyStats {
 
 type TabType = 'quiz' | 'rewards' | 'analysis';
 
+
+
 export function RewardsPage() {
   const navigate = useNavigate();
   const [attempts, setAttempts] = useState<QuizAttempt[]>([]);
@@ -32,9 +35,22 @@ export function RewardsPage() {
     totalRewards: 0,
     correctRate: 0,
   });
-  const [selectedMonth, setSelectedMonth] = useState<string>(
-    new Date().toISOString().slice(0, 7) // YYYY-MM format
-  );
+  const renderMath = (text: string) => {
+    const parts = text.split(/(\$[^$]+\$)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('$') && part.endsWith('$')) {
+        const formula = part.slice(1, -1);
+        return <InlineMath key={index} math={formula} />;
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`; // YYYY-MM format
+  });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('rewards');
   const [analysisData, setAnalysisData] = useState<WeaknessAnalysisResponse | null>(null);
@@ -45,7 +61,8 @@ export function RewardsPage() {
     try {
       setAnalysisLoading(true);
       setAnalysisError(null);
-      const data = await getWeaknessAnalysis(selectedMonth);
+      // childId를 전달하지 않으면 현재 로그인한 사용자의 약점 분석
+      const data = await getWeaknessAnalysis();
       setAnalysisData(data);
     } catch (err) {
       console.error("Failed to load weakness analysis:", err);
@@ -53,7 +70,7 @@ export function RewardsPage() {
     } finally {
       setAnalysisLoading(false);
     }
-  }, [selectedMonth]);
+  }, []);
 
   useEffect(() => {
     const fetchRewards = async () => {
@@ -68,12 +85,46 @@ export function RewardsPage() {
         } else {
           // 실제 API 호출
           const response = await authFetch(
-            `/api/child/rewards?month=${selectedMonth}`
+            `/api/user/rewards?month=${selectedMonth}`
           );
+          console.log(response, 'response');
           const data = await response.json();
+          console.log('API Response:', data);
 
-          setAttempts(data.attempts || []);
-          setMonthlyStats(data.stats || { totalSolved: 0, totalRewards: 0, correctRate: 0 });
+          // API 응답 데이터 매핑
+          const mappedAttempts: QuizAttempt[] = (data.attempts || []).map((attempt: any) => {
+            let questionTitle = '제목 없음';
+            if (typeof attempt.questionTitle === 'string') {
+              questionTitle = attempt.questionTitle;
+            } else if (typeof attempt.questionTitle === 'object' && attempt.questionTitle !== null) {
+              // questionTitle이 객체일 경우 text 속성 추출
+              questionTitle = attempt.questionTitle.text || attempt.questionTitle.title || JSON.stringify(attempt.questionTitle);
+            }
+
+            return {
+              id: String(attempt.id),
+              quizId: String(attempt.quizId),
+              questionTitle: renderMath(questionTitle),
+              selectedChoice: renderMath(attempt.selectedChoice || ''),
+              isCorrect: attempt.isCorrect || false,
+              rewardCandy: attempt.rewardCandy || 0,
+              createdAt: attempt.createdAt || new Date().toISOString(),
+            };
+          });
+
+          // 통계 데이터 매핑
+          const stats = data.stats || {};
+          const totalSolved = stats.totalAttempts || mappedAttempts.length;
+          const totalRewards = stats.totalCandyEarned || mappedAttempts.reduce((sum, attempt) => sum + attempt.rewardCandy, 0);
+          const correctCount = stats.correctCount || mappedAttempts.filter(attempt => attempt.isCorrect).length;
+          const correctRate = totalSolved > 0 ? (correctCount / totalSolved) * 100 : 0;
+
+          setAttempts(mappedAttempts);
+          setMonthlyStats({
+            totalSolved,
+            totalRewards,
+            correctRate,
+          });
         }
       } catch (error) {
         console.error("Failed to fetch rewards:", error);
@@ -103,7 +154,9 @@ export function RewardsPage() {
     const currentDate = new Date();
     for (let i = 0; i < 6; i++) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-      const value = date.toISOString().slice(0, 7);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const value = `${year}-${month}`;
       const label = date.toLocaleDateString("ko-KR", {
         year: "numeric",
         month: "long",
@@ -112,6 +165,7 @@ export function RewardsPage() {
     }
     return options;
   };
+  console.log(getMonthOptions(), 'getMonthOptions');
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600";
@@ -402,7 +456,7 @@ export function RewardsPage() {
                       {/* Problem details (collapsed) */}
                       <div className="pt-4 mt-4 border-t border-gray-100">
                         <div className="grid grid-cols-1 gap-2">
-                          {dateAttempts.map((attempt) => (
+                          {dateAttempts.map((attempt) => attempt.rewardCandy > 0 && (
                             <div
                               key={attempt.id}
                               className="flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50"

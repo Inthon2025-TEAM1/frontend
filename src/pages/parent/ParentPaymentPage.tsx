@@ -84,27 +84,27 @@ export function ParentPaymentPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-8">
+    <div className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="mb-2 text-4xl font-bold text-gray-900">
             서비스 이용료 결제
           </h1>
           <p className="text-lg text-gray-600">자녀별 월 구독료를 결제하세요</p>
         </div>
 
         {/* 요금제 안내 */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
+        <div className="p-8 mb-6 bg-white shadow-lg rounded-2xl">
           <div className="flex items-center gap-3 mb-6">
             <span className="text-4xl">💳</span>
             <h2 className="text-2xl font-bold text-gray-900">요금 안내</h2>
           </div>
 
-          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border-2 border-purple-200 mb-6">
+          <div className="p-6 mb-6 border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-lg text-gray-700 mb-2">자녀 1명당 월</p>
+                <p className="mb-2 text-lg text-gray-700">자녀 1명당 월</p>
                 <p className="text-4xl font-bold text-purple-600">
                   {pricePerChild.toLocaleString()}원
                 </p>
@@ -112,7 +112,7 @@ export function ParentPaymentPage() {
             </div>
           </div>
 
-          <div className="space-y-3 mb-6">
+          <div className="mb-6 space-y-3">
             <div className="flex items-center gap-2 text-gray-700">
               <span className="text-green-600">✓</span>
               <span>무제한 학습 문제 제공</span>
@@ -132,8 +132,8 @@ export function ParentPaymentPage() {
           </div>
 
           {/* 자녀 수 표시 (읽기 전용) */}
-          <div className="border-t border-gray-200 pt-6">
-            <label className="block text-lg font-semibold text-gray-900 mb-3">
+          <div className="pt-6 border-t border-gray-200">
+            <label className="block mb-3 text-lg font-semibold text-gray-900">
               등록된 자녀 수
             </label>
             <div className="flex items-center justify-center mb-6">
@@ -145,21 +145,21 @@ export function ParentPaymentPage() {
                     {childrenCount}명
                   </p>
                 )}
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="mt-2 text-sm text-gray-500">
                   자녀 추가/제거는 부모 대시보드에서 가능합니다
                 </p>
               </div>
             </div>
 
             {/* 총 금액 */}
-            <div className="bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
-              <div className="flex justify-between items-center mb-2">
+            <div className="p-6 border-2 border-gray-200 bg-gray-50 rounded-xl">
+              <div className="flex items-center justify-between mb-2">
                 <span className="text-lg text-gray-700">월 총 결제 금액</span>
                 <span className="text-3xl font-bold text-gray-900">
                   {totalPrice.toLocaleString()}원
                 </span>
               </div>
-              <p className="text-sm text-gray-500 text-right">
+              <p className="text-sm text-right text-gray-500">
                 ({childrenCount}명 × {pricePerChild.toLocaleString()}원)
               </p>
             </div>
@@ -167,10 +167,10 @@ export function ParentPaymentPage() {
         </div>
 
         {/* 입금자명 입력 */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">입금자 정보</h3>
+        <div className="p-8 mb-6 bg-white shadow-lg rounded-2xl">
+          <h3 className="mb-4 text-xl font-bold text-gray-900">입금자 정보</h3>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
               입금자명 <span className="text-red-500">*</span>
             </label>
             <input
@@ -178,7 +178,7 @@ export function ParentPaymentPage() {
               value={depositorName}
               onChange={(e) => setDepositorName(e.target.value)}
               placeholder="입금자명을 입력하세요"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
+              className="w-full px-4 py-3 transition-colors border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none"
               disabled={isLoading}
             />
             <p className="mt-2 text-sm text-gray-500">
@@ -188,20 +188,20 @@ export function ParentPaymentPage() {
         </div>
 
         {/* 결제 수단 선택 */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">결제 수단</h3>
+        <div className="p-8 mb-6 bg-white shadow-lg rounded-2xl">
+          <h3 className="mb-4 text-xl font-bold text-gray-900">결제 수단</h3>
           <div className="space-y-3">
             <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg opacity-50 cursor-not-allowed">
               <input type="radio" name="payment" className="w-5 h-5" disabled />
               <span className="text-2xl">💳</span>
               <div className="flex-1">
                 <span className="font-medium">신용카드</span>
-                <span className="ml-2 text-sm text-orange-600 font-semibold">
+                <span className="ml-2 text-sm font-semibold text-orange-600">
                   (출시 준비중)
                 </span>
               </div>
             </label>
-            <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-indigo-500 cursor-pointer transition-colors">
+            <label className="flex items-center gap-3 p-4 transition-colors border-2 border-gray-200 rounded-lg cursor-pointer hover:border-indigo-500">
               <input
                 type="radio"
                 name="payment"
@@ -219,7 +219,7 @@ export function ParentPaymentPage() {
                 <span className="font-medium">
                   간편결제 (카카오페이, 네이버페이)
                 </span>
-                <span className="ml-2 text-sm text-orange-600 font-semibold">
+                <span className="ml-2 text-sm font-semibold text-orange-600">
                   (출시 준비중)
                 </span>
               </div>
@@ -229,7 +229,7 @@ export function ParentPaymentPage() {
 
         {/* 에러 메시지 */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+          <div className="p-4 mb-6 border-2 border-red-200 rounded-lg bg-red-50">
             <p className="text-sm text-red-700">
               <span className="font-semibold">⚠️ 오류:</span> {error}
             </p>
@@ -252,7 +252,7 @@ export function ParentPaymentPage() {
         </button>
 
         {/* 안내 문구 */}
-        <div className="mt-6 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
+        <div className="p-4 mt-6 border-2 border-yellow-200 rounded-lg bg-yellow-50">
           <p className="text-sm text-gray-700">
             <span className="font-semibold">※ 안내사항:</span>
             <br />- 매월 자동 결제됩니다.

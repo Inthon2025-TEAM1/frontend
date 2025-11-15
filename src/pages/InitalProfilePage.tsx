@@ -52,10 +52,10 @@ export function InitUserPage() {
   };
 
   return (
-    <div className="bg-white min-h-screen w-full px-4 sm:px-6 md:px-8 pt-8 pb-12">
+    <div className="w-full min-h-screen px-4 pt-8 pb-12 bg-white sm:px-6 md:px-8">
       {/* Role Selection Cards */}
       <div className="w-full mt-8 sm:mt-16 md:mt-24 lg:mt-32">
-        <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-center justify-center max-w-7xl mx-auto">
+        <div className="flex flex-col items-center justify-center gap-6 mx-auto lg:flex-row md:gap-8 max-w-7xl">
 
           {/* Parent Card */}
           <div className="bg-[#f8f4ff] flex flex-col justify-between p-6 sm:p-8 md:p-12 rounded-3xl w-full max-w-[621px] min-h-[450px] sm:min-h-[500px] md:min-h-[534px]">
@@ -72,7 +72,7 @@ export function InitUserPage() {
               </h2>
 
               {/* Features List */}
-              <div className="flex flex-col gap-2 w-full">
+              <div className="flex flex-col w-full gap-2">
                 <p className="text-base sm:text-lg text-[#475467] text-center">
                   • 자녀의 학습 진행 상황 모니터링
                 </p>
@@ -95,7 +95,7 @@ export function InitUserPage() {
                 handleRoleSubmit("parent");
               }}
               disabled={submitting}
-              className="bg-white h-14 rounded-xl shadow-md w-full mt-6 hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex items-center justify-center w-full gap-2 mt-6 transition-shadow bg-white shadow-md h-14 rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="font-medium text-base text-[#101828]">
                 역할 설정
@@ -109,7 +109,7 @@ export function InitUserPage() {
             {/* Content */}
             <div className="flex flex-col items-center space-y-6 md:space-y-8">
               {/* Icon Circle */}
-              <div className="bg-emerald-500 rounded-full w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36 flex items-center justify-center">
+              <div className="flex items-center justify-center w-24 h-24 rounded-full bg-emerald-500 sm:w-28 sm:h-28 md:w-36 md:h-36">
                 <img alt="학생 아이콘" className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20" src={studentIcon} />
               </div>
 
@@ -119,7 +119,7 @@ export function InitUserPage() {
               </h2>
 
               {/* Features List */}
-              <div className="flex flex-col gap-2 w-full">
+              <div className="flex flex-col w-full gap-2">
                 <p className="text-base sm:text-lg text-[#475467] text-center">
                   • 다양한 퀴즈로 재미있게 학습
                 </p>
@@ -142,7 +142,7 @@ export function InitUserPage() {
                 handleRoleSubmit("child");
               }}
               disabled={submitting}
-              className="bg-white h-14 rounded-xl shadow-md w-full mt-6 hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex items-center justify-center w-full gap-2 mt-6 transition-shadow bg-white shadow-md h-14 rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="font-medium text-base text-[#101828]">
                 역할 설정

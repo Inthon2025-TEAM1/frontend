@@ -70,6 +70,9 @@ export async function authFetch(
       window.location.href = "/login";
     }
   }
+  if(response.status === 406){
+    alert("결제 요청이 전송되었습니다.");
+  }
 
   return response;
 }
@@ -380,11 +383,11 @@ export interface WeaknessAnalysisResponse {
   improvementAreas: string[];
 }
 
-export async function getWeaknessAnalysis(month?: string): Promise<WeaknessAnalysisResponse> {
-  const url = month 
-    ? `/api/ai/analyze-weakness?month=${month}`
+export async function getWeaknessAnalysis(childId?: number): Promise<WeaknessAnalysisResponse> {
+  const url = childId
+    ? `/api/ai/analyze-weakness?childId=${childId}`
     : "/api/ai/analyze-weakness";
-  
+
   const response = await authFetch(url, {
     method: "GET",
   });
