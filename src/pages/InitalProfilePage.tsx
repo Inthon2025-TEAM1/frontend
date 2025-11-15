@@ -25,15 +25,15 @@ export function InitUserPage() {
       alert("역할을 선택해주세요.");
       return;
     }
-    
+
     setSubmitting(true);
     try {
       const response = await postWithAuth("/api/auth/register", {
         role: role,
       });
-      
+
       console.log("Role set successfully:", response);
-      
+
       // 역할 설정 완료 후 역할에 따라 리다이렉트
       if (response.role === "child") {
         navigate("/dashboard", { replace: true });
@@ -52,49 +52,39 @@ export function InitUserPage() {
   };
 
   return (
-    <div className="bg-white box-border content-stretch flex flex-col gap-12 items-start pb-0 pt-8 px-8 relative min-h-screen w-full">
+    <div className="bg-white min-h-screen w-full px-4 sm:px-6 md:px-8 pt-8 pb-12">
       {/* Role Selection Cards */}
-      <div className="h-[534px] relative shrink-0 w-full mt-32">
-        <div className="flex gap-8 items-start justify-center relative w-full">
-          {/* Parent Card */}
-          <div className="bg-[#f8f4ff] box-border content-stretch flex flex-col h-[534px] items-start justify-between pb-[15px] pl-12 pr-0 pt-12 rounded-3xl w-[621px]">
-            <div className="h-[382px] relative shrink-0 w-[525px]">
-              <div className="bg-clip-padding border-0 border-transparent border-solid box-border h-[382px] relative w-[525px]">
-                {/* Icon Circle */}
-                <div className="absolute bg-[#6941c6] box-border content-stretch flex flex-col items-center justify-center left-[190px] rounded-full size-36 top-0">
-                  <img alt="부모님 아이콘" className="block w-20 h-20" src={parentsIcon} />
-                </div>
+      <div className="w-full mt-8 sm:mt-16 md:mt-24 lg:mt-32">
+        <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-center justify-center max-w-7xl mx-auto">
 
-                {/* Content */}
-                <div className="absolute content-stretch flex flex-col gap-4 h-[206px] items-start left-0 top-[176px] w-[525px]">
-                  <div className="h-[58px] relative shrink-0 w-full">
-                    <p className="absolute font-bold leading-[57.6px] left-[263px] not-italic text-[#101828] text-5xl text-center text-nowrap top-[-1px] translate-x-[-50%] whitespace-pre">
-                      부모님
-                    </p>
-                  </div>
-                  <div className="content-stretch flex flex-col gap-2 h-[132px] items-start relative shrink-0 w-full">
-                    <div className="h-[27px] relative shrink-0 w-full">
-                      <p className="absolute font-normal leading-[27px] left-[262px] not-italic text-[#475467] text-lg text-center text-nowrap top-0 translate-x-[-50%] whitespace-pre">
-                        • 자녀의 학습 진행 상황 모니터링
-                      </p>
-                    </div>
-                    <div className="h-[27px] relative shrink-0 w-full">
-                      <p className="absolute font-normal leading-[27px] left-[263px] not-italic text-[#475467] text-lg text-center text-nowrap top-0 translate-x-[-50%] whitespace-pre">
-                        • 학습 리포트 및 성적 분석
-                      </p>
-                    </div>
-                    <div className="h-[27px] relative shrink-0 w-full">
-                      <p className="absolute font-normal leading-[27px] left-[263px] not-italic text-[#475467] text-lg text-center text-nowrap top-0 translate-x-[-50%] whitespace-pre">
-                        • 학습 목표 설정 및 관리
-                      </p>
-                    </div>
-                    <div className="h-[27px] relative shrink-0 w-full">
-                      <p className="absolute font-normal leading-[27px] left-[263px] not-italic text-[#475467] text-lg text-center text-nowrap top-0 translate-x-[-50%] whitespace-pre">
-                        • 자녀의 포인트 관리
-                      </p>
-                    </div>
-                  </div>
-                </div>
+          {/* Parent Card */}
+          <div className="bg-[#f8f4ff] flex flex-col justify-between p-6 sm:p-8 md:p-12 rounded-3xl w-full max-w-[621px] min-h-[450px] sm:min-h-[500px] md:min-h-[534px]">
+            {/* Content */}
+            <div className="flex flex-col items-center space-y-6 md:space-y-8">
+              {/* Icon Circle */}
+              <div className="bg-[#6941c6] rounded-full w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36 flex items-center justify-center">
+                <img alt="부모님 아이콘" className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20" src={parentsIcon} />
+              </div>
+
+              {/* Title */}
+              <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl text-[#101828] text-center">
+                부모님
+              </h2>
+
+              {/* Features List */}
+              <div className="flex flex-col gap-2 w-full">
+                <p className="text-base sm:text-lg text-[#475467] text-center">
+                  • 자녀의 학습 진행 상황 모니터링
+                </p>
+                <p className="text-base sm:text-lg text-[#475467] text-center">
+                  • 학습 리포트 및 성적 분석
+                </p>
+                <p className="text-base sm:text-lg text-[#475467] text-center">
+                  • 학습 목표 설정 및 관리
+                </p>
+                <p className="text-base sm:text-lg text-[#475467] text-center">
+                  • 자녀의 포인트 관리
+                </p>
               </div>
             </div>
 
@@ -105,58 +95,43 @@ export function InitUserPage() {
                 handleRoleSubmit("parent");
               }}
               disabled={submitting}
-              className="bg-white h-14 relative rounded-xl shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] shrink-0 w-[525px] hover:shadow-md transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-white h-14 rounded-xl shadow-md w-full mt-6 hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              <div className="bg-clip-padding border-0 border-transparent border-solid box-border h-14 relative w-[525px]">
-                <p className="absolute font-medium leading-6 left-[219px] not-italic text-[#101828] text-base text-nowrap top-[15px] whitespace-pre">
-                  역할 설정
-                </p>
-                <div className="absolute left-[286px] size-5 top-[18px]">
-                  <img alt="화살표 아이콘" className="block max-w-none size-full" src={signIcon} />
-                </div>
-              </div>
+              <span className="font-medium text-base text-[#101828]">
+                역할 설정
+              </span>
+              <img alt="화살표 아이콘" className="w-5 h-5" src={signIcon} />
             </button>
           </div>
 
           {/* Student Card */}
-          <div className="bg-[#f8f4ff] box-border content-stretch flex flex-col h-[534px] items-start justify-between pb-[15px] pl-12 pr-0 pt-12 rounded-3xl w-[621px]">
-            <div className="h-[382px] relative shrink-0 w-[525px]">
-              <div className="bg-clip-padding border-0 border-transparent border-solid box-border h-[382px] relative w-[525px]">
-                {/* Icon Circle */}
-                <div className="absolute bg-emerald-500 box-border content-stretch flex flex-col items-center justify-center left-[190px] rounded-full size-36 top-0">
-                  <img alt="학생 아이콘" className="block w-20 h-20" src={studentIcon} />
-                </div>
+          <div className="bg-[#f8f4ff] flex flex-col justify-between p-6 sm:p-8 md:p-12 rounded-3xl w-full max-w-[621px] min-h-[450px] sm:min-h-[500px] md:min-h-[534px]">
+            {/* Content */}
+            <div className="flex flex-col items-center space-y-6 md:space-y-8">
+              {/* Icon Circle */}
+              <div className="bg-emerald-500 rounded-full w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36 flex items-center justify-center">
+                <img alt="학생 아이콘" className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20" src={studentIcon} />
+              </div>
 
-                {/* Content */}
-                <div className="absolute content-stretch flex flex-col gap-4 h-[206px] items-start left-0 top-[176px] w-[525px]">
-                  <div className="h-[58px] relative shrink-0 w-full">
-                    <p className="absolute font-bold leading-[57.6px] left-[263px] not-italic text-[#101828] text-5xl text-center text-nowrap top-[-1px] translate-x-[-50%] whitespace-pre">
-                      학생
-                    </p>
-                  </div>
-                  <div className="content-stretch flex flex-col gap-2 h-[132px] items-start relative shrink-0 w-full">
-                    <div className="h-[27px] relative shrink-0 w-full">
-                      <p className="absolute font-normal leading-[27px] left-[263px] not-italic text-[#475467] text-lg text-center text-nowrap top-0 translate-x-[-50%] whitespace-pre">
-                        • 다양한 퀴즈로 재미있게 학습
-                      </p>
-                    </div>
-                    <div className="h-[27px] relative shrink-0 w-full">
-                      <p className="absolute font-normal leading-[27px] left-[262px] not-italic text-[#475467] text-lg text-center text-nowrap top-0 translate-x-[-50%] whitespace-pre">
-                        • 난이도별 문제 풀이
-                      </p>
-                    </div>
-                    <div className="h-[27px] relative shrink-0 w-full">
-                      <p className="absolute font-normal leading-[27px] left-[263px] not-italic text-[#475467] text-lg text-center text-nowrap top-0 translate-x-[-50%] whitespace-pre">
-                        • 학습 포인트 및 보상 획득
-                      </p>
-                    </div>
-                    <div className="h-[27px] relative shrink-0 w-full">
-                      <p className="absolute font-normal leading-[27px] left-[263px] not-italic text-[#475467] text-lg text-center text-nowrap top-0 translate-x-[-50%] whitespace-pre">
-                        • 개인 맞춤형 학습 추천
-                      </p>
-                    </div>
-                  </div>
-                </div>
+              {/* Title */}
+              <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl text-[#101828] text-center">
+                학생
+              </h2>
+
+              {/* Features List */}
+              <div className="flex flex-col gap-2 w-full">
+                <p className="text-base sm:text-lg text-[#475467] text-center">
+                  • 다양한 퀴즈로 재미있게 학습
+                </p>
+                <p className="text-base sm:text-lg text-[#475467] text-center">
+                  • 난이도별 문제 풀이
+                </p>
+                <p className="text-base sm:text-lg text-[#475467] text-center">
+                  • 학습 포인트 및 보상 획득
+                </p>
+                <p className="text-base sm:text-lg text-[#475467] text-center">
+                  • 개인 맞춤형 학습 추천
+                </p>
               </div>
             </div>
 
@@ -167,16 +142,12 @@ export function InitUserPage() {
                 handleRoleSubmit("child");
               }}
               disabled={submitting}
-              className="bg-white h-14 relative rounded-xl shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] shrink-0 w-[525px] hover:shadow-md transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-white h-14 rounded-xl shadow-md w-full mt-6 hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              <div className="bg-clip-padding border-0 border-transparent border-solid box-border h-14 relative w-[525px]">
-                <p className="absolute font-medium leading-6 left-[219px] not-italic text-[#101828] text-base text-nowrap top-[15px] whitespace-pre">
-                  역할 설정
-                </p>
-                <div className="absolute left-[286px] size-5 top-[18px]">
-                  <img alt="화살표 아이콘" className="block max-w-none size-full" src={signIcon} />
-                </div>
-              </div>
+              <span className="font-medium text-base text-[#101828]">
+                역할 설정
+              </span>
+              <img alt="화살표 아이콘" className="w-5 h-5" src={signIcon} />
             </button>
           </div>
 

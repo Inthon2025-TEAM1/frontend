@@ -226,6 +226,24 @@ export function ParentDashboardPage() {
             </p>
           </div>
         </div>
+
+        {/* 학습 리포트 카드 */}
+        <div className="mt-8 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl shadow-lg p-8 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold mb-2">📊 학습 리포트</h3>
+              <p className="text-purple-100">
+                AI가 분석한 자녀의 학습 현황과 약점을 확인하세요
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/parent/learning-report")}
+              className="px-8 py-4 bg-white text-purple-600 rounded-xl font-bold text-lg hover:bg-purple-50 transition-colors shadow-lg"
+            >
+              리포트 보기 →
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
