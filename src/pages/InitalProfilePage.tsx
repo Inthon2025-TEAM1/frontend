@@ -47,11 +47,11 @@ export function InitUserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="bg-white rounded-lg shadow p-6 space-y-6">
+          <div className="p-6 space-y-6 bg-white rounded-lg shadow">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              <h2 className="mb-4 text-2xl font-bold text-gray-900">
                 환영합니다! 🎉
               </h2>
               <div className="space-y-2 text-gray-700">
@@ -69,15 +69,15 @@ export function InitUserPage() {
             </div>
 
             {/* 역할 선택 UI */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <div className="pt-6 border-t">
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
                 역할 설정
               </h3>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="mb-6 text-sm text-gray-600">
                 EduPlay를 사용하실 역할을 선택해주세요.
               </p>
 
-              <div className="grid md:grid-cols-3 gap-4 mb-6">
+              <div className="grid gap-4 mb-6 md:grid-cols-3">
                 {/* 학부모 카드 */}
                 <button
                   onClick={() => handleRoleSelect("parent")}
@@ -87,8 +87,8 @@ export function InitUserPage() {
                       : "border-gray-200 bg-white hover:border-indigo-300"
                   }`}
                 >
-                  <div className="text-5xl mb-3">👨‍👩‍👧‍👦</div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">
+                  <div className="mb-3 text-5xl">👨‍👩‍👧‍👦</div>
+                  <h4 className="mb-2 text-lg font-bold text-gray-900">
                     학부모
                   </h4>
                   <p className="text-sm text-gray-600">
@@ -105,28 +105,13 @@ export function InitUserPage() {
                       : "border-gray-200 bg-white hover:border-indigo-300"
                   }`}
                 >
-                  <div className="text-5xl mb-3">🧒</div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">자녀</h4>
+                  <div className="mb-3 text-5xl">🧒</div>
+                  <h4 className="mb-2 text-lg font-bold text-gray-900">자녀</h4>
                   <p className="text-sm text-gray-600">
                     재미있게 문제를 풀고 학습합니다.
                   </p>
                 </button>
 
-                {/* 멘토 카드 */}
-                <button
-                  onClick={() => handleRoleSelect("mentor")}
-                  className={`p-6 rounded-xl border-2 transition-all ${
-                    selectedRole === "mentor"
-                      ? "border-indigo-600 bg-indigo-50"
-                      : "border-gray-200 bg-white hover:border-indigo-300"
-                  }`}
-                >
-                  <div className="text-5xl mb-3">👩‍🏫</div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">멘토</h4>
-                  <p className="text-sm text-gray-600">
-                    학생들을 가르치고 학습을 지도합니다.
-                  </p>
-                </button>
               </div>
 
               <div className="flex items-center justify-between">
@@ -140,7 +125,7 @@ export function InitUserPage() {
                 <button
                   onClick={handleRoleSubmit}
                   disabled={!selectedRole}
-                  className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2 text-white transition-colors bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   역할 설정 완료
                 </button>
