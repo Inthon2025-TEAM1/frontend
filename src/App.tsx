@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ParentRoute } from "./components/ParentRoute";
+import { ChildRoute } from "./components/ChildRoute";
 import { PublicOnlyRoute } from "./components/PublicOnlyRoute";
 import { HomeRedirect } from "./components/HomeRedirect";
 import { LoginPage } from "./pages/LoginPage";
@@ -77,41 +78,41 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
+              <ChildRoute>
                 <DashboardPage />
-              </ProtectedRoute>
+              </ChildRoute>
             }
           />
           <Route
             path="/profile"
             element={
-              <ProtectedRoute>
+              <ChildRoute>
                 <ProfilePage />
-              </ProtectedRoute>
+              </ChildRoute>
             }
           />
           <Route
             path="/quiz-selection"
             element={
-              <ProtectedRoute>
+              <ChildRoute>
                 <QuizSelectionPage />
-              </ProtectedRoute>
+              </ChildRoute>
             }
           />
           <Route
             path="/rewards"
             element={
-              <ProtectedRoute>
+              <ChildRoute>
                 <RewardsPage />
-              </ProtectedRoute>
+              </ChildRoute>
             }
           />
           <Route
             path="/store"
             element={
-              <ProtectedRoute>
+              <ChildRoute>
                 <StorePage />
-              </ProtectedRoute>
+              </ChildRoute>
             }
           />
         </Route>
@@ -119,17 +120,17 @@ function App() {
         <Route
           path="/gacha"
           element={
-            <ProtectedRoute>
+            <ChildRoute>
               <GachaPage />
-            </ProtectedRoute>
+            </ChildRoute>
           }
         />
         <Route
           path="/quiz"
           element={
-            <ProtectedRoute>
+            <ChildRoute>
               <QuizPage />
-            </ProtectedRoute>
+            </ChildRoute>
           }
         />
 
@@ -138,41 +139,41 @@ function App() {
           <Route
             path="dashboard"
             element={
-              <ProtectedRoute>
+              <ParentRoute>
                 <ParentDashboardPage />
-              </ProtectedRoute>
+              </ParentRoute>
             }
           />
           <Route
             path="learning-report"
             element={
-              <ProtectedRoute>
+              <ParentRoute>
                 <ParentLearningReportPage />
-              </ProtectedRoute>
+              </ParentRoute>
             }
           />
           <Route
             path="payment"
             element={
-              <ProtectedRoute>
+              <ParentRoute>
                 <ParentPaymentPage />
-              </ProtectedRoute>
+              </ParentRoute>
             }
           />
           <Route
             path="mentoring/list"
             element={
-              <ProtectedRoute>
+              <ParentRoute>
                 <ParentMentoringListPage />
-              </ProtectedRoute>
+              </ParentRoute>
             }
           />
           <Route
             path="mentoring/apply"
             element={
-              <ProtectedRoute>
+              <ParentRoute>
                 <ParentMentoringApplyPage />
-              </ProtectedRoute>
+              </ParentRoute>
             }
           />
         </Route>
