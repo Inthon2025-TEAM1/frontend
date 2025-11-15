@@ -320,3 +320,45 @@ export const rarityLabels: Record<string, string> = {
   epic: "에픽",
   legendary: "전설",
 };
+
+// 이미지 파일명을 아이템 정보로부터 자동 생성하는 함수
+export const getItemImageUrl = (item: StoreItem): string | null => {
+  const imageMap: Record<string, string> = {
+    // 문화상품권
+    "culture_001": "/images/문상0.5.png",
+    "culture_002": "/images/문상1.0.png",
+    "culture_003": "/images/문상2.0.png",
+    "culture_004": "/images/문상5.0.png",
+    
+    // 편의점
+    "conv_001": "/images/cu0.3.png",
+    "conv_002": "/images/gs0.5.png",
+    "conv_003": "/images/세븐0.5.jpg",
+    "conv_004": "/images/cu1.0.png",
+    "conv_005": "/images/gs2.0.png",
+    
+    // 배달/음식
+    "food_001": "/images/배민0.5.png",
+    "food_002": "/images/베민1.0.png",
+    "food_003": "/images/베민2.0.png",
+    "food_004": "/images/요기요0.5.png",
+    "food_005": "/images/쿠팡이츠1.0.png",
+    "food_006": "/images/맘스터치0.5.png",
+    
+    // 카페
+    "cafe_001": "/images/백다방_아메리카노.png",
+    "cafe_002": "/images/백다방0.5.jpg",
+    "cafe_003": "/images/스타벅스_아메리카노tall.png",
+    "cafe_004": "/images/스벅0.5.png",
+    "cafe_005": "/images/투썸0.5.png",
+    "cafe_006": "/images/이디야0.5.png",
+    "cafe_007": "/images/메가커피_아메리카노.png",
+    "cafe_008": "/images/컴포즈_아메리카노.png",
+    
+    // 디지털
+    "digital_001": "/images/구글0.5.jpg",
+    "digital_002": "/images/구글1.0.png",
+  };
+  
+  return imageMap[item.id] || null;
+};

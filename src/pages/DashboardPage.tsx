@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { ProfileHeader } from "../components/dashboard/ProfileHeader";
-import { CharacterGachaBanner } from "../components/dashboard/CharacterGachaBanner";
 import { QuizCategoryCard } from "../components/dashboard/QuizCategoryCard";
 import { authFetch } from "../api/auth";
 
@@ -75,10 +74,6 @@ export function DashboardPage() {
     }
   };
 
-  const handleGachaNavigate = () => {
-    navigate("/gacha");
-  };
-
   const handleStartQuiz = (chapterId: number, chapterName: string) => {
     navigate(`/quiz?chapterId=${chapterId}&chapterName=${encodeURIComponent(chapterName)}`);
   };
@@ -137,12 +132,9 @@ export function DashboardPage() {
   }));
 
   return (
-    <div className="bg-white box-border flex flex-col gap-8 items-start pb-[120px] pt-8 px-8 relative min-h-[calc(100vh+120px)] w-full">
+    <div className="bg-white box-border flex flex-col gap-10 items-start pb-[120px] pt-8 px-8 relative min-h-[calc(100vh+120px)] w-full">
       {/* Profile Header */}
       <ProfileHeader candyCount={42} onLogout={handleLogout} />
-
-      {/* Character Gacha Banner */}
-      <CharacterGachaBanner onNavigate={handleGachaNavigate} />
 
       {/* Learning Categories */}
       <div className="relative flex flex-col items-start w-full gap-6 shrink-0">
@@ -185,7 +177,7 @@ export function DashboardPage() {
             </div>
           </div>
         </div>
-        <div className="relative grid w-full h-auto grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 shrink-0">
+        <div className="relative grid w-full h-auto grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 shrink-0">
           {isLoading ? (
             <div className="flex items-center justify-center py-12 col-span-full">
               <p className="text-[#475467] text-lg">로딩 중...</p>

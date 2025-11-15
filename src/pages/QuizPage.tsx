@@ -307,7 +307,7 @@ export function QuizPage() {
             </div>
 
             {/* 선택지 */}
-            <div className="flex-1 space-y-2 overflow-auto">
+            <div className="space-y-2">
               {choices.map((choice, index) => (
                 <button
                   key={index}
@@ -333,7 +333,7 @@ export function QuizPage() {
             </div>
 
             {/* 정답 확인 버튼 */}
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end mt-6">
               <button
                 onClick={handleCheckAnswer}
                 disabled={!answer}

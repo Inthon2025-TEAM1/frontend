@@ -15,7 +15,7 @@ export function ProfileHeader({ candyCount = 42, onLogout }: ProfileHeaderProps)
   const displayName = user?.displayName || user?.email?.split("@")[0] || "사용자";
 
   return (
-    <div className="bg-white flex h-[114px] items-center justify-between px-6 py-0 rounded-3xl shadow-sm shrink-0 w-full">
+    <div className="bg-white flex h-[114px] items-center justify-between px-6 py-0 rounded-3xl shadow-lg shrink-0 w-full">
       <div className="h-[66px] relative shrink-0 w-auto">
         <div className="flex gap-4 h-[66px] items-center relative">
           <div className="bg-[#f8f4ff] relative rounded-full shrink-0 size-16">

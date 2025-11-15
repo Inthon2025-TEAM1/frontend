@@ -46,13 +46,6 @@ export function Header() {
               홈
             </Link>
             <Link
-              to="#testimonials"
-              className="text-gray-700 hover:text-indigo-600 font-medium"
-            >
-              사용자 이야기
-            </Link>
-
-            <Link
               to="/rewards"
               className="text-gray-700 hover:text-indigo-600 font-medium"
             >
