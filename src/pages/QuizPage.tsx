@@ -21,83 +21,16 @@ export interface Question {
   explain: string;
 }
 
-interface ApiQuestion {
-  id: string;
-  question: string;
-  answer: string;
-  explanation: string;
-  difficulty: string;
-  choices: string[];
-}
-
-interface ApiQuizData {
-  quizId: string;
-  title: string;
-  questions: ApiQuestion[];
-}
-
-interface QuizData {
-  quizId: string;
-  title: string;
-  questions: Question[];
-}
+// interface ApiQuestion {
+//   id: string;
+//   question: string;
+//   answer: string;
+//   explanation: string;
+//   difficulty: string;
+//   choices: string[];
+// }
 
 
-const dummyData: Question[] = [{
-  "grade": 3,
-  "type": "객관식",
-  "chapterId": 1,
-  "question": {
-    "text": "일차방정식 $3x - 5 = 10$의 해를 구하세요."
-  },
-  "choices": ["$x = 3$", "$x = 5$", "$x = -3$", "$x = -5$"],
-  "answer": "$x = 5$",
-  "explain": "$3x = 10 + 5$ 이므로 $3x = 15$입니다. 따라서 $x = 5$입니다."
-},
-{
-  "grade": 3,
-  "type": "객관식",
-  "chapterId": 2,
-  "question": {
-    "text": "일차부등식 $2x + 4 > 10$의 해를 구하세요."
-  },
-  "choices": ["$x > 3$", "$x < 3$", "$x > 7$", "$x < 7$"],
-  "answer": "$x > 3$",
-  "explain": "$2x > 10 - 4$ 이므로 $2x > 6$입니다. 양변을 2로 나누면 $x > 3$입니다."
-},
-{
-  "grade": 3,
-  "type": "객관식",
-  "chapterId": 4,
-  "question": {
-    "text": "일차함수 $y = -2x + 1$의 그래프에 대한 설명으로 옳지 않은 것은?"
-  },
-  "choices": ["기울기는 -2이다.", "y절편은 1이다.", "점 $(1, 1)$을 지난다.", "오른쪽 아래로 향하는 직선이다."],
-  "answer": "점 $(1, 1)$을 지난다.",
-  "explain": "$x=1$을 대입하면 $y = -2(1) + 1 = -1$입니다. 따라서 점 $(1, -1)$을 지나며, $(1, 1)$은 지나지 않습니다."
-},
-{
-  "grade": 3,
-  "type": "객관식",
-  "chapterId": 1,
-  "question": {
-    "text": "이차방정식 $x^2 - 5x + 6 = 0$을 풀어보세요."
-  },
-  "choices": ["$x = 2, 3$", "$x = 1, 6$", "$x = -2, -3$", "$x = 0, 5$"],
-  "answer": "$x = 2, 3$",
-  "explain": "인수분해하면 $(x-2)(x-3) = 0$이므로 $x = 2$ 또는 $x = 3$입니다."
-},
-{
-  "grade": 3,
-  "type": "객관식",
-  "chapterId": 1,
-  "question": {
-    "text": "연속하는 세 자연수의 합이 48일 때, 이 세 수 중 가장 큰 수는?"
-  },
-  "choices": ["15", "16", "17", "18"],
-  "answer": "17",
-  "explain": "연속하는 세 자연수를 $x-1, x, x+1$이라 하면, $(x-1) + x + (x+1) = 48$입니다. $3x = 48$이므로 $x = 16$입니다. 가장 큰 수는 $x+1 = 17$입니다."
-}];
 
 interface HistoryType{
    questionIndex: number, selectedAnswer: string, isCorrect:boolean 
@@ -119,13 +52,17 @@ export function QuizPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const chapterId = searchParams.get("chapterId") || 1;
+  // searchParams에서 chapterId 추출 및 파싱
+  const chapterIdParam = searchParams.get("chapterId");
+  const chapterId = chapterIdParam ? parseInt(chapterIdParam, 10) : null;
   const chapterName = searchParams.get("chapterName");
   const category = chapterName || "퀴즈";
 
+  console.log('searchParams in quizpage - chapterId:', chapterId, 'chapterName:', chapterName);
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answer, setAnswer] = useState("");
-  const [quizData, setQuizData] = useState<QuizData | null>(null);
+  const [quizData, setQuizData] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
@@ -134,53 +71,31 @@ export function QuizPage() {
   const [showWrongMark, setShowWrongMark] = useState(false);
   const [history, setHistory] = useState<HistoryType[]>([]);
 
-  const displayName = user?.displayName || user?.email?.split("@")[0] || "사용자";
-  const candyCount = 42;
-
   useEffect(() => {
     const fetchQuizData = async () => {
+      // chapterId가 없거나 유효하지 않으면 에러 처리
+      if (!chapterId || isNaN(chapterId)) {
+        setError("유효하지 않은 챕터입니다.");
+        setLoading(false);
+        return;
+      }
+
+      console.log(chapterId, 'fetching quiz for chapterId');
       try {
         const response = await authFetch(`/api/quiz?chapterId=${chapterId}`, {
           method: "GET",
         });
 
-        const apiResponse: ApiQuizData = await response.json();
+        const apiResponse: Question[] = await response.json();
         console.log(apiResponse, 'quiz response');
 
-        if (apiResponse && apiResponse.quizId && apiResponse.questions?.length > 0) {
+        if (apiResponse ) {
           // Transform API response to match our Question interface
-          const transformedQuestions: Question[] = apiResponse.questions.map(q => {
-            // Parse the question JSON string
-            let questionText = "";
-            try {
-              const parsedQuestion = JSON.parse(q.question);
-              questionText = parsedQuestion.text;
-            } catch {
-              questionText = q.question;
-            }
 
-            return {
-              question: {
-                text: questionText
-              },
-              choices: q.choices,
-              answer: q.answer,
-              explain: q.explanation
-            };
-          });
 
-          setQuizData({
-            quizId: apiResponse.quizId,
-            title: apiResponse.title,
-            questions: transformedQuestions
-          });
-        } else {
-          // Fallback to dummy data if API response is invalid
-          setQuizData({
-            quizId: "dummy-quiz-id",
-            title: "더미 퀴즈",
-            questions: dummyData
-          });
+
+          setQuizData(apiResponse);
+        
         }
         setLoading(false);
       } catch (error) {
@@ -192,8 +107,8 @@ export function QuizPage() {
     fetchQuizData();
   }, [chapterId]);
 
-  const totalQuestions = quizData?.questions?.length || 10;
-  const currentQuestionData = quizData?.questions?.[currentQuestion];
+  const totalQuestions = quizData?.length || 10;
+  const currentQuestionData = quizData?.[currentQuestion];
   const correctAnswer = currentQuestionData?.answer || "";
   const questionText = currentQuestionData?.question?.text || "";
   const choices = currentQuestionData?.choices || [];
@@ -260,10 +175,10 @@ export function QuizPage() {
           <div className="text-6xl mb-4">⚠️</div>
           <p className="text-xl text-red-600 mb-4">{error}</p>
           <button
-            onClick={() => navigate("/quiz-selection")}
+            onClick={() => navigate("/dashboard")}
             className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
           >
-            퀴즈 선택 페이지로 돌아가기
+            대시보드로 돌아가기
           </button>
         </div>
       </div>
@@ -299,7 +214,7 @@ export function QuizPage() {
           {/* 해설 목록 */}
           
           <div className="space-y-4">
-            {quizData?.questions.map((question, index) => {
+            {quizData.map((question, index) => {
               const userAnswer = history.find(a => a.questionIndex === index);
               return (
                 <div key={index} className="bg-white rounded-2xl shadow-md p-6">

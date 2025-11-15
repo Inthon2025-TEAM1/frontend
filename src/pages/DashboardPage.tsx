@@ -7,18 +7,65 @@ import { CharacterGachaBanner } from "../components/dashboard/CharacterGachaBann
 import { QuizCategoryCard } from "../components/dashboard/QuizCategoryCard";
 import { authFetch } from "../api/auth";
 
+interface Chapter {
+  id: number;
+  chapterName: string;
+  chapterDescription: string;
+  chapterOrder: number;
+  gradeLevel?: number;
+}
+
 export function DashboardPage() {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [selectedGrade, setSelectedGrade] = useState<string>("전체");
-  useEffect(()=>{
+  const [chapters, setChapters] = useState<Array<Chapter>>([])
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        if (selectedGrade === "전체") {
+          // 전체 선택 시 1, 2, 3학년 모두 호출
+          const [grade1Res, grade2Res, grade3Res] = await Promise.all([
+            authFetch(`/api/quiz/chapters?gradeLevel=1`, { method: "GET" }),
+            authFetch(`/api/quiz/chapters?gradeLevel=2`, { method: "GET" }),
+            authFetch(`/api/quiz/chapters?gradeLevel=3`, { method: "GET" }),
+          ]);
 
-     console.log('asldfhas;lghsdkfhalsekfj', await authFetch("/api/quiz", {method:"GET"}))
-    }
+          const [grade1Data, grade2Data, grade3Data] = await Promise.all([
+            grade1Res.json(),
+            grade2Res.json(),
+            grade3Res.json(),
+          ]);
+
+          // 모든 학년의 데이터를 합침
+          const allChapters = [
+            ...(grade1Data.data || []),
+            ...(grade2Data.data || []),
+            ...(grade3Data.data || []),
+          ];
+          setChapters(allChapters);
+        } else {
+          // 특정 학년 선택 시 해당 학년만 호출
+          const gradeLevel = parseInt(selectedGrade.replace("학년", ""));
+          const res = await authFetch(`/api/quiz/chapters?gradeLevel=${gradeLevel}`, {
+            method: "GET",
+          });
+          const data = await res.json();
+          setChapters(data.data || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch chapters:", error);
+        setChapters([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchData();
-
-  },[])
+  }, [selectedGrade])
   const handleLogout = async () => {
     try {
       await logout();
@@ -32,8 +79,8 @@ export function DashboardPage() {
     navigate("/gacha");
   };
 
-  const handleStartQuiz = (category: string) => {
-    navigate("/quiz", { state: { category } });
+  const handleStartQuiz = (chapterId: number, chapterName: string) => {
+    navigate(`/quiz?chapterId=${chapterId}&chapterName=${encodeURIComponent(chapterName)}`);
   };
 
   // 색상 배열 (순환 사용)
@@ -65,98 +112,29 @@ export function DashboardPage() {
     "rose",
   ];
 
-  // 카테고리 설명 생성 함수
-  const getDescription = (title: string) => {
-    return `${title}의 개념을 이해하고 다양한 문제를 풀어보세요.`;
+  // 난이도 결정 함수 (챕터 순서에 따라)
+  const getDifficulty = (chapterOrder: number): "하" | "중" | "상" => {
+    if (chapterOrder <= 3) return "하";
+    if (chapterOrder <= 6) return "중";
+    return "상";
   };
 
-  // 난이도 결정 함수 (학년과 순서에 따라)
-  const getDifficulty = (grade: string, index: number): "하" | "중" | "상" => {
-    if (grade === "1학년") {
-      return index < 4 ? "하" : index < 6 ? "중" : "상";
-    } else if (grade === "2학년") {
-      return index < 3 ? "하" : index < 6 ? "중" : "상";
-    } else {
-      return index < 2 ? "하" : index < 5 ? "중" : "상";
-    }
+  // 학년 레벨을 한글 학년으로 변환
+  const getGradeDisplay = (gradeLevel?: number): string => {
+    if (!gradeLevel) return "";
+    return `${gradeLevel}학년`;
   };
 
-  // 학년별 카테고리 데이터
-  const gradeCategories = {
-    "1학년": [
-      "소인수분해",
-      "정수와 유리수",
-      "문자의 사용과 식",
-      "일차방정식",
-      "좌표평면과 그래프",
-      "자료의 정리와 해석",
-      "기본 도형",
-      "평면도형과 입체도형",
-    ],
-    "2학년": [
-      "유리수와 순환소수",
-      "식의 계산",
-      "일차부등식",
-      "연립일차방정식",
-      "일차함수와 그래프",
-      "도형의 성질",
-      "도형의 닮음",
-      "경우의 수와 확률",
-    ],
-    "3학년": [
-      "제곱근과 실수",
-      "다항식의 곱셈과 인수분해",
-      "이차방정식",
-      "이차함수와 그래프",
-      "삼각비",
-      "원의 성질",
-      "통계",
-    ],
-  };
-
-  // 선택된 학년에 따라 카테고리 필터링
-  const getFilteredCategories = () => {
-    if (selectedGrade === "전체") {
-      // 전체 선택 시 모든 학년의 카테고리 표시
-      const allCategories: Array<{
-        title: string;
-        description: string;
-        difficulty: "하" | "중" | "상";
-        problemCount: number;
-        color: (typeof colors)[number];
-        grade: string;
-      }> = [];
-
-      Object.entries(gradeCategories).forEach(([grade, categories]) => {
-        categories.forEach((title, index) => {
-          allCategories.push({
-            title,
-            description: getDescription(title),
-            difficulty: getDifficulty(grade, index),
-            problemCount: 8 + (index % 5), // 8-12 문제 (고정값)
-            color: colors[index % colors.length],
-            grade,
-          });
-        });
-      });
-
-      return allCategories;
-    } else {
-      // 특정 학년 선택 시 해당 학년의 카테고리만 표시
-      return gradeCategories[selectedGrade as keyof typeof gradeCategories].map(
-        (title, index) => ({
-          title,
-          description: getDescription(title),
-          difficulty: getDifficulty(selectedGrade, index),
-          problemCount: 8 + (index % 5), // 8-12 문제 (고정값)
-          color: colors[index % colors.length],
-          grade: selectedGrade,
-        })
-      );
-    }
-  };
-
-  const quizCategories = getFilteredCategories();
+  // API 데이터를 카드 props로 변환
+  const quizCategories = chapters.map((chapter, index) => ({
+    id: chapter.id,
+    title: chapter.chapterName,
+    description: chapter.chapterDescription || `${chapter.chapterName}의 개념을 이해하고 다양한 문제를 풀어보세요.`,
+    difficulty: getDifficulty(chapter.chapterOrder),
+    problemCount: 10, // 고정값 (필요시 API에서 가져올 수 있음)
+    color: colors[index % colors.length],
+    grade: getGradeDisplay(chapter.gradeLevel),
+  }));
 
   return (
     <div className="bg-white box-border flex flex-col gap-8 items-start pb-[120px] pt-8 px-8 relative min-h-[calc(100vh+120px)] w-full">
@@ -208,20 +186,28 @@ export function DashboardPage() {
           </div>
         </div>
         <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-auto relative shrink-0 w-full">
-          {quizCategories.map((category, index) => (
-            <QuizCategoryCard
-              key={`${category.grade || selectedGrade}-${
-                category.title
-              }-${index}`}
-              title={category.title}
-              description={category.description}
-              difficulty={category.difficulty}
-              problemCount={category.problemCount}
-              color={category.color}
-              grade={category.grade}
-              onStart={() => handleStartQuiz(category.title)}
-            />
-          ))}
+          {isLoading ? (
+            <div className="col-span-full flex items-center justify-center py-12">
+              <p className="text-[#475467] text-lg">로딩 중...</p>
+            </div>
+          ) : quizCategories.length === 0 ? (
+            <div className="col-span-full flex items-center justify-center py-12">
+              <p className="text-[#475467] text-lg">챕터가 없습니다.</p>
+            </div>
+          ) : (
+            quizCategories.map((category, index) => (
+              <QuizCategoryCard
+                key={`${category.id}-${category.title}-${index}`}
+                title={category.title}
+                description={category.description}
+                difficulty={category.difficulty}
+                problemCount={category.problemCount}
+                color={category.color}
+                grade={category.grade}
+                onStart={() => handleStartQuiz(category.id, category.title)}
+              />
+            ))
+          )}
         </div>
       </div>
     </div>
