@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  getChildren,
-  addChild,
-  removeChild,
-  type Child,
-} from "../../api/auth";
+import { getChildren, addChild, removeChild, type Child } from "../../api/auth";
 
 export function ParentDashboardPage() {
   const navigate = useNavigate();
@@ -82,16 +77,10 @@ export function ParentDashboardPage() {
           </div>
           <div className="flex gap-3">
             <button
-              onClick={handleShareLink}
-              className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors shadow-md"
-            >
-              📤 문제 푸는 링크 공유
-            </button>
-            <button
               onClick={() => navigate("/parent/mentoring/apply")}
               className="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors shadow-md"
             >
-              ✨ 멘토링 신청하기
+              ✨ 고려대 정보대 학생 멘토링 신청하기
             </button>
           </div>
         </div>
@@ -151,39 +140,39 @@ export function ParentDashboardPage() {
           {!loading && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {children.map((child) => (
-              <div
-                key={child.id}
-                className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border-2 border-indigo-200 hover:shadow-lg transition-shadow"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-4xl">👦</span>
+                <div
+                  key={child.id}
+                  className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border-2 border-indigo-200 hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-4xl">👦</span>
+                      <div>
+                        <h3 className="font-bold text-xl text-gray-900">
+                          {child.name || child.email}
+                        </h3>
+                        <p className="text-sm text-gray-600">{child.email}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveChild(child.id)}
+                      className="text-red-500 hover:text-red-700 font-bold text-xl"
+                      title="자녀 제거"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-4 flex items-center gap-3">
+                    <span className="text-3xl">🍬</span>
                     <div>
-                      <h3 className="font-bold text-xl text-gray-900">
-                        {child.name || child.email}
-                      </h3>
-                      <p className="text-sm text-gray-600">{child.email}</p>
+                      <p className="text-sm text-gray-600">획득한 캔디</p>
+                      <p className="text-2xl font-bold text-indigo-600">
+                        {child.candy}
+                      </p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleRemoveChild(child.id)}
-                    className="text-red-500 hover:text-red-700 font-bold text-xl"
-                    title="자녀 제거"
-                  >
-                    ✕
-                  </button>
                 </div>
-
-                <div className="bg-white rounded-lg p-4 flex items-center gap-3">
-                  <span className="text-3xl">🍬</span>
-                  <div>
-                    <p className="text-sm text-gray-600">획득한 캔디</p>
-                    <p className="text-2xl font-bold text-indigo-600">
-                      {child.candy}
-                    </p>
-                  </div>
-                </div>
-              </div>
               ))}
             </div>
           )}

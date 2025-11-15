@@ -1,31 +1,77 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  createMentoringApplication,
+  getChildren,
+  type Child,
+} from "../../api/auth";
 
 export function ParentMentoringApplyPage() {
   const navigate = useNavigate();
+  const [children, setChildren] = useState<Child[]>([]);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    childId: "",
+    childName: "",
     title: "",
     childAge: "",
-    childPersonality: "",
-    childGoal: "",
-    currentLevel: "",
-    mentoringType: "",
-    additionalInfo: "",
+    requirement: "",
   });
 
+  useEffect(() => {
+    loadChildren();
+  }, []);
+
+  const loadChildren = async () => {
+    try {
+      const data = await getChildren();
+      setChildren(data);
+    } catch (err) {
+      console.error("Failed to load children:", err);
+    }
+  };
+
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Auto-fill child name when child is selected
+    if (name === "childId") {
+      const selectedChild = children.find((c) => c.id === parseInt(value));
+      if (selectedChild) {
+        setFormData((prev) => ({ ...prev, childName: selectedChild.name }));
+      }
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: API 연동
-    console.log("멘토링 신청 데이터:", formData);
-    alert("멘토링 신청이 완료되었습니다!\n관리자가 검토 후 매칭해드립니다.");
-    navigate("/parent/mentoring/list");
+
+    if (!formData.childId) {
+      alert("자녀를 선택해주세요.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await createMentoringApplication({
+        childId: parseInt(formData.childId),
+        childName: formData.childName,
+        title: formData.title,
+        childAge: formData.childAge,
+        requirement: formData.requirement,
+      });
+      alert("멘토링 신청이 완료되었습니다!\n관리자가 검토 후 매칭해드립니다.");
+      navigate("/parent/mentoring/list");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "신청에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,6 +89,27 @@ export function ParentMentoringApplyPage() {
 
         {/* 신청 폼 */}
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* 자녀 선택 */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <label className="block text-lg font-bold text-gray-900 mb-3">
+              자녀 선택 <span className="text-red-500">*</span>
+            </label>
+            <select
+              name="childId"
+              value={formData.childId}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              required
+            >
+              <option value="">자녀를 선택하세요</option>
+              {children.map((child) => (
+                <option key={child.id} value={child.id}>
+                  {child.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* 제목 */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <label className="block text-lg font-bold text-gray-900 mb-3">
@@ -59,110 +126,39 @@ export function ParentMentoringApplyPage() {
             />
           </div>
 
-          {/* 자녀 정보 */}
+          {/* 자녀 학년 */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <span className="text-2xl">👦</span>
-              자녀 정보
-            </h2>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  자녀 나이 <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="childAge"
-                  value={formData.childAge}
-                  onChange={handleChange}
-                  placeholder="나이를 입력하세요"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  required
-                  min="1"
-                  max="20"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  자녀 성향 <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  name="childPersonality"
-                  value={formData.childPersonality}
-                  onChange={handleChange}
-                  placeholder="자녀의 성격, 관심사, 학습 스타일 등을 자유롭게 작성해주세요"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                  rows={4}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  학습 목표 <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  name="childGoal"
-                  value={formData.childGoal}
-                  onChange={handleChange}
-                  placeholder="멘토링을 통해 달성하고 싶은 목표를 작성해주세요"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                  rows={4}
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* 현재 학습 수준 */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <span className="text-2xl">📊</span>
-              현재 학습 수준
-            </h2>
-            <textarea
-              name="currentLevel"
-              value={formData.currentLevel}
+            <label className="block text-lg font-bold text-gray-900 mb-3">
+              자녀 학년 <span className="text-red-500">*</span>
+            </label>
+            <select
+              name="childAge"
+              value={formData.childAge}
               onChange={handleChange}
-              placeholder="자녀의 현재 학습 수준, 강점과 약점, 어려움을 겪는 부분 등을 자세히 작성해주세요"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-              rows={5}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               required
-            />
+            >
+              <option value="">학년을 선택하세요</option>
+              <option value="중1">중학교 1학년</option>
+              <option value="중2">중학교 2학년</option>
+              <option value="중3">중학교 3학년</option>
+            </select>
           </div>
 
-          {/* 원하는 멘토링 유형 */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <span className="text-2xl">✨</span>
-              원하는 멘토링 유형
-            </h2>
-            <textarea
-              name="mentoringType"
-              value={formData.mentoringType}
-              onChange={handleChange}
-              placeholder="예: 주 2회 1시간씩 화상 수업, 과제 검토 및 피드백, 시험 대비 집중 수업 등"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-              rows={5}
-              required
-            />
-          </div>
-
-          {/* 추가 정보 (선택사항) */}
+          {/* 멘토링 요구사항 */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
               <span className="text-2xl">📝</span>
-              추가 정보 (선택사항)
+              멘토링 요구사항
             </h2>
             <textarea
-              name="additionalInfo"
-              value={formData.additionalInfo}
+              name="requirement"
+              value={formData.requirement}
               onChange={handleChange}
-              placeholder="멘토에게 전달하고 싶은 추가 정보가 있다면 작성해주세요"
+              placeholder="자녀의 현재 학습 수준, 목표, 원하는 멘토링 스타일 등을 자세히 작성해주세요"
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-              rows={4}
+              rows={8}
+              required
             />
           </div>
 
@@ -172,14 +168,16 @@ export function ParentMentoringApplyPage() {
               type="button"
               onClick={() => navigate("/parent/mentoring/list")}
               className="flex-1 py-4 bg-gray-300 text-gray-700 rounded-xl font-bold text-lg hover:bg-gray-400 transition-colors"
+              disabled={loading}
             >
               취소
             </button>
             <button
               type="submit"
-              className="flex-1 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl"
+              className="flex-1 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
             >
-              신청하기
+              {loading ? "신청 중..." : "신청하기"}
             </button>
           </div>
         </form>

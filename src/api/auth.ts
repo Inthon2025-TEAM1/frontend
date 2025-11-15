@@ -159,6 +159,14 @@ export async function getChildren(): Promise<Child[]> {
 }
 
 /**
+ * Get children count for current parent
+ */
+export async function getChildrenCount(): Promise<{ count: number }> {
+  const response = await authFetch("/api/user/children-count");
+  return await response.json();
+}
+
+/**
  * Add a child to current parent account
  */
 export async function addChild(childEmail: string): Promise<Child> {
@@ -217,6 +225,107 @@ export async function createPayment(
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || "결제 생성에 실패했습니다.");
+  }
+
+  return await response.json();
+}
+
+/**
+ * Mentoring APIs
+ */
+
+export interface MentoringApplication {
+  id: number;
+  title: string;
+  childName: string;
+  childAge: string; // 중1, 중2, 중3
+  status: "pending" | "matched" | "rejected" | "cancelled" | "completed";
+  createdAt: string;
+  mentorName?: string;
+  requirement: string;
+}
+
+export interface CreateMentoringRequest {
+  childId: number;
+  title: string;
+  childName: string;
+  childAge: string; // 중1, 중2, 중3
+  requirement: string;
+}
+
+/**
+ * Get list of mentoring applications for current parent
+ */
+export async function getMentoringApplications(): Promise<
+  MentoringApplication[]
+> {
+  const response = await authFetch("/api/mentoring/applications");
+  return await response.json();
+}
+
+/**
+ * Get single mentoring application detail
+ */
+export async function getMentoringApplication(
+  id: number
+): Promise<MentoringApplication> {
+  const response = await authFetch(`/api/mentoring/applications/${id}`);
+  return await response.json();
+}
+
+/**
+ * Create a new mentoring application
+ */
+export async function createMentoringApplication(
+  data: CreateMentoringRequest
+): Promise<MentoringApplication> {
+  const response = await authFetch("/api/mentoring/applications", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "멘토링 신청에 실패했습니다.");
+  }
+
+  return await response.json();
+}
+
+/**
+ * Cancel a mentoring application (only if status is 'pending')
+ */
+export async function cancelMentoringApplication(
+  id: number
+): Promise<{ success: boolean; message: string }> {
+  const response = await authFetch(`/api/mentoring/applications/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "멘토링 신청 취소에 실패했습니다.");
+  }
+
+  return await response.json();
+}
+
+/**
+ * Update mentoring application status (admin only)
+ */
+export async function updateMentoringStatus(
+  id: number,
+  status: "matched" | "rejected",
+  mentorName?: string
+): Promise<MentoringApplication> {
+  const response = await authFetch(`/api/mentoring/applications/${id}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({ status, mentorName }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "상태 업데이트에 실패했습니다.");
   }
 
   return await response.json();
