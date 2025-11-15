@@ -42,6 +42,7 @@ export function ParentDashboardPage() {
         alert("자녀가 추가되었습니다!");
       } catch (error) {
         console.error("Failed to add child:", error);
+        
         alert("자녀 추가에 실패했습니다. 이메일을 확인해주세요.");
       }
     }
@@ -124,7 +125,10 @@ export function ParentDashboardPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setShowAddForm(false)}
+                  onClick={() => {
+                    setShowAddForm(false)
+                    setNewChildEmail("");
+                  }}
                   className="px-6 py-2 font-medium text-gray-700 transition-colors bg-gray-300 rounded-lg hover:bg-gray-400"
                 >
                   취소
