@@ -145,7 +145,7 @@ export async function getPurchaseHistory(): Promise<
 export async function getCurrentUser(): Promise<{
   id: number;
   email: string;
-  role: "parent" | "child" | "mentor" | null;
+  role: "parent" | "child" | null;
   candy: number;
 }> {
   const response = await authFetch("/api/user/me");

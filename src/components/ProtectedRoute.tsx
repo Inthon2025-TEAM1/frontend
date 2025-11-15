@@ -15,7 +15,7 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const location = useLocation();
-  const [userRole, setUserRole] = useState<"parent" | "child" | "mentor" | null | undefined>(undefined);
+  const [userRole, setUserRole] = useState<"parent" | "child" | null | undefined>(undefined);
   const [roleLoading, setRoleLoading] = useState(true);
 
   // Fetch user role when authenticated

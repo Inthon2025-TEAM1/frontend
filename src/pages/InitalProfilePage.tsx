@@ -3,7 +3,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useState, useEffect } from "react";
 import { postWithAuth, getCurrentUser } from "../api/auth";
 
-type UserRole = "parent" | "child" | "mentor" | null;
+type UserRole = "parent" | "child" | null;
 
 // 이미지 assets
 const parentsIcon = "/images/parents_icon.png";
