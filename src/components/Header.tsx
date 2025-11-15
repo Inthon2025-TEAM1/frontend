@@ -1,11 +1,27 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { logout } from "../services/authService";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { authFetch } from "../api/auth";
 
 export function Header() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
+  const [role, setRole] = useState<string | null>(null);
+  useEffect(() => {
+    const getRole = async () => {
+      console.log('aslfkjl')
+      const res = await authFetch("/api/user/role", {method:"GET"})
+      console.log(res, 'role');
+    }
+    if (user) {
+      getRole();
+    } 
+
+  },[user]);
+  
   const handleLogout = async () => {
     try {
       await logout();
