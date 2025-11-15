@@ -383,8 +383,12 @@ export interface WeaknessAnalysisResponse {
   improvementAreas: string[];
 }
 
-export async function getWeaknessAnalysis(): Promise<WeaknessAnalysisResponse> {
-  const response = await authFetch("/api/ai/analyze-weakness", {
+export async function getWeaknessAnalysis(childId?: number): Promise<WeaknessAnalysisResponse> {
+  const url = childId
+    ? `/api/ai/analyze-weakness?childId=${childId}`
+    : "/api/ai/analyze-weakness";
+
+  const response = await authFetch(url, {
     method: "GET",
   });
 
