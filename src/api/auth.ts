@@ -2,6 +2,36 @@
 import { auth } from "../firebase/firebase";
 
 /**
+ * Get API base URL based on environment
+ */
+function getApiBaseUrl(): string {
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  // 로컬 환경 (localhost:3000)
+  if (apiUrl === "localhost:3000") {
+    return "";
+  }
+
+  // 배포 환경 - VITE_API_URL 값을 그대로 사용
+  // URL이 http:// 또는 https://로 시작하지 않으면 https:// 추가
+  if (!apiUrl.startsWith("http://") && !apiUrl.startsWith("https://")) {
+    return `https://${apiUrl}`;
+  }
+
+  return apiUrl;
+}
+
+/**
+ * Build full API URL
+ */
+function buildApiUrl(endpoint: string): string {
+  const baseUrl = getApiBaseUrl();
+  // endpoint가 /로 시작하면 그대로, 아니면 / 추가
+  const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  return `${baseUrl}${path}`;
+}
+
+/**
  * Custom error for authentication failures
  */
 export class AuthError extends Error {
@@ -51,19 +81,22 @@ export async function authFetch(
     headers.Authorization = `Bearer ${token}`;
   }
 
-  // 3) Make initial request
-  const response = await fetch(url, {
+  // 3) Build full API URL
+  const fullUrl = buildApiUrl(url);
+
+  // 4) Make initial request
+  const response = await fetch(fullUrl, {
     ...options,
     headers,
   });
 
-  // 4) Handle 401/403 → Attempt token refresh and retry
+  // 5) Handle 401/403 → Attempt token refresh and retry
   if (response.status === 401 || response.status === 403) {
     try {
       const newToken = await auth.currentUser?.getIdToken(true);
       if (newToken) {
         headers.Authorization = `Bearer ${newToken}`;
-        return fetch(url, { ...options, headers }); // 재요청
+        return fetch(fullUrl, { ...options, headers }); // 재요청
       }
     } catch {
       await auth.signOut();

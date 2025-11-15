@@ -144,13 +144,113 @@ export function ParentLearningReportPage() {
     );
   }
 
-  // Show loading during analysis
+  // Skeleton UI Component
+  const SkeletonBox = ({ className = "" }: { className?: string }) => (
+    <div className={`bg-gray-200 rounded-lg animate-pulse ${className}`}></div>
+  );
+
+  // Show skeleton UI during analysis
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 border-b-2 border-purple-600 rounded-full animate-spin"></div>
-          <p className="text-xl text-gray-600">{selectedChild.name}님의 분석 중...</p>
+      <div className="min-h-screen p-8 bg-gray-50">
+        <div className="mx-auto max-w-7xl">
+          {/* Header */}
+          <div className="mb-8">
+            <button
+              onClick={() => setSelectedChild(null)}
+              className="flex items-center gap-2 mb-4 font-semibold text-purple-600 hover:text-purple-700"
+            >
+              ← 자녀 선택으로 돌아가기
+            </button>
+            <h1 className="mb-2 text-4xl font-bold text-gray-900">
+              📊 학습 리포트 - {selectedChild.name}
+            </h1>
+            <p className="text-lg text-gray-600">
+              {selectedChild.name}님의 학습 현황과 약점을 분석한 결과입니다
+            </p>
+          </div>
+
+          {/* Overall Score Skeleton */}
+          <div className="p-8 mb-8 bg-white border-2 border-gray-200 shadow-lg rounded-2xl">
+            <div className="text-center">
+              <h2 className="mb-4 text-2xl font-bold text-gray-900">종합 점수</h2>
+              <div className="mb-2 text-4xl font-bold text-gray-400">
+                평가중...
+              </div>
+              <SkeletonBox className="h-6 mx-auto w-80" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {/* Weaknesses Skeleton */}
+            <div className="p-6 bg-white shadow-lg rounded-2xl">
+              <h2 className="flex items-center gap-2 mb-6 text-2xl font-bold text-gray-900">
+                <span className="text-3xl">🎯</span>
+                약점 분석
+              </h2>
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="p-4 border-2 border-gray-200 rounded-xl">
+                    <SkeletonBox className="w-3/4 h-6 mb-3" />
+                    <SkeletonBox className="w-full h-4 mb-2" />
+                    <SkeletonBox className="w-5/6 h-4" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Improvement Areas Skeleton */}
+            <div className="p-6 bg-white shadow-lg rounded-2xl">
+              <h2 className="flex items-center gap-2 mb-6 text-2xl font-bold text-gray-900">
+                <span className="text-3xl">📈</span>
+                개선이 필요한 영역
+              </h2>
+              <div className="space-y-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="p-4 border-2 border-blue-200 bg-blue-50 rounded-xl">
+                    <SkeletonBox className="w-full h-4" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Recommendations Skeleton */}
+          <div className="p-6 mt-6 bg-white shadow-lg rounded-2xl">
+            <h2 className="flex items-center gap-2 mb-6 text-2xl font-bold text-gray-900">
+              <span className="text-3xl">💡</span>
+              학습 추천사항
+            </h2>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="p-4 border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl">
+                  <SkeletonBox className="w-full h-4" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-center gap-4 mt-8">
+            <button
+              disabled
+              className="px-8 py-4 text-lg font-bold text-white bg-gray-400 cursor-not-allowed rounded-xl"
+            >
+              🔄 다시 분석하기
+            </button>
+            <button
+              onClick={() => setSelectedChild(null)}
+              className="px-8 py-4 text-lg font-bold text-purple-700 transition-colors bg-purple-100 rounded-xl hover:bg-purple-200"
+            >
+              다른 자녀 선택
+            </button>
+            <button
+              onClick={() => navigate("/parent/dashboard")}
+              className="px-8 py-4 text-lg font-bold text-gray-700 transition-colors bg-gray-200 rounded-xl hover:bg-gray-300"
+            >
+              대시보드로 이동
+            </button>
+          </div>
         </div>
       </div>
     );
