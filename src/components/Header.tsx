@@ -1,18 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
-import { auth } from "../firebase/firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useAuth } from "../contexts/AuthContext";
+import { logout } from "../services/authService";
 
 export function Header() {
-  const [user] = useAuthState(auth);
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await auth.signOut();
+      await logout();
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
-      alert("로그아웃에 실패했습니다.");
     }
   };
 
@@ -56,29 +55,37 @@ export function Header() {
 
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
-            {user ? (
+
+          {user ? (
+            <>
+              <span className="text-gray-700">안녕하세요, {user.displayName}님</span>
               <button
+                className="text-gray-700 hover:text-indigo-600 font-medium"
                 onClick={handleLogout}
-                className="px-6 py-2 bg-gray-600 text-white rounded-full font-semibold hover:bg-gray-700 transition-colors shadow-sm"
               >
                 로그아웃
               </button>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="text-gray-700 hover:text-indigo-600 font-medium"
-                >
-                  로그인
-                </Link>
-                <Link
-                  to="/register"
-                  className="px-6 py-2 bg-indigo-600 text-white rounded-full font-semibold hover:bg-indigo-700 transition-colors shadow-sm"
-                >
-                  회원가입
-                </Link>
-              </>
+            </>
+
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="text-gray-700 hover:text-indigo-600 font-medium"
+              >
+                로그인
+              </Link>
+
+              <Link
+                to="/register"
+                className="px-6 py-2 bg-indigo-600 text-white rounded-full font-semibold hover:bg-indigo-700 transition-colors shadow-sm"
+              >
+                회원가입
+              </Link>
+            </>
+
             )}
+            
           </div>
         </div>
       </nav>
