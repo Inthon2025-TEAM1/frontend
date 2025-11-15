@@ -18,7 +18,7 @@ export function RegisterPage() {
 
   const handleRegister = async (email: string, password: string) => {
     await register(email, password);
-    navigate("/dashboard");
+    navigate("/initUser");
   };
 
   return (

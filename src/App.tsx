@@ -5,14 +5,32 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { HomePage } from "./pages/HomePage";
+import { InitUserPage } from "./pages/InitalProfilePage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Redirect root to login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route
+          path="/home"
+          element={
+            <PublicOnlyRoute>
+              <HomePage />
+            </PublicOnlyRoute>
+          }
+        />
 
+        <Route
+          path="/initUser"
+          element={
+            <PublicOnlyRoute>
+              <InitUserPage/>
+            </PublicOnlyRoute>
+          }
+        />
         {/* Public-only routes (redirect to dashboard if already logged in) */}
         <Route
           path="/login"

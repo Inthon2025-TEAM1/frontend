@@ -1,17 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
-import { fetchUserProfile } from "../api/auth";
 
 type UserRole = "parent" | "child" | "mentor" | null;
 
-export function DashboardPage() {
+export function InitUserPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>(null);
-  const [showRoleSelection, setShowRoleSelection] = useState(false);
+  // get Profile api 호출해야함.
 
   const handleLogout = async () => {
     try {
@@ -22,25 +19,7 @@ export function DashboardPage() {
     }
   };
 
-  const handleFetchProfile = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchUserProfile();
-      console.log(data)
-      setProfile(data);
 
-      // 프로필 정보가 없거나 역할이 설정되지 않은 경우 역할 선택 UI 표시
-      if (!data || !data.role) {
-        setShowRoleSelection(true);
-      }
-    } catch (error) {
-      console.error("Failed to fetch profile:", error);
-      // API 에러 시에도 역할 선택 UI 표시
-      setShowRoleSelection(true);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleRoleSelect = (role: UserRole) => {
     setSelectedRole(role);
@@ -54,12 +33,8 @@ export function DashboardPage() {
 
     // TODO: API 연결 시 여기서 서버로 역할 정보 전송
     console.log("선택된 역할:", selectedRole);
+  }
 
-    // 임시로 로컬 상태에만 저장
-    setProfile({ ...profile, role: selectedRole });
-    setShowRoleSelection(false);
-    alert(`역할이 ${getRoleLabel(selectedRole)}(으)로 설정되었습니다.`);
-  };
 
   const getRoleLabel = (role: UserRole) => {
     switch (role) {
@@ -121,29 +96,8 @@ export function DashboardPage() {
               </div>
             </div>
 
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                백엔드 API 테스트
-              </h3>
-              <button
-                onClick={handleFetchProfile}
-                disabled={loading}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-              >
-                {loading ? "불러오는 중..." : "프로필 불러오기"}
-              </button>
-
-              {profile && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm font-mono text-gray-700">
-                    {JSON.stringify(profile, null, 2)}
-                  </p>
-                </div>
-              )}
-            </div>
 
             {/* 역할 선택 UI */}
-            {showRoleSelection && (
               <div className="border-t pt-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   역할 설정
@@ -225,7 +179,7 @@ export function DashboardPage() {
                   </button>
                 </div>
               </div>
-            )}
+
           </div>
         </div>
       </main>
