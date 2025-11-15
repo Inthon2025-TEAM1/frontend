@@ -12,6 +12,7 @@ import { HomeLayout } from "./pages/HomeLayout";
 import { QuizSelectionPage } from "./pages/QuizSelectionPage";
 import { GachaPage } from "./pages/GachaPage";
 import { QuizPage } from "./pages/QuizPage";
+import GamePage from "./pages/GamePage";
 
 function App() {
   return (
@@ -28,13 +29,22 @@ function App() {
               </PublicOnlyRoute>
             }
           />
+          <Route
+            path="/OpenBox"
+            element={<
+              PublicOnlyRoute>
+                <GamePage />
+              </PublicOnlyRoute>
+            }
+          />
+
 
           <Route
             path="/initUser"
             element={
-              <PublicOnlyRoute>
-                <InitUserPage/>
-              </PublicOnlyRoute>
+              <ProtectedRoute>
+                <InitUserPage />
+              </ProtectedRoute>
             }
           />
           {/* Public-only routes (redirect to dashboard if already logged in) */}
