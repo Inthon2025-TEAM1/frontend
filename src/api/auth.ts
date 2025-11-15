@@ -107,3 +107,34 @@ export async function fetchCandyCount(): Promise<{ candy: number }> {
   const response = await authFetch("/api/user/candy");
   return await response.json();
 }
+
+/**
+ * Spend candy to purchase an item
+ */
+export async function spendCandy(
+  amount: number,
+  itemName: string
+): Promise<{ candy: number }> {
+  const response = await authFetch("/api/user/spend-candy", {
+    method: "POST",
+    body: JSON.stringify({ amount, itemName }),
+  });
+  return await response.json();
+}
+
+/**
+ * Get purchase history
+ */
+export async function getPurchaseHistory(): Promise<
+  Array<{
+    id: number;
+    userId: number;
+    type: string;
+    amount: number;
+    itemName: string;
+    createdAt: string;
+  }>
+> {
+  const response = await authFetch("/api/user/purchase-history");
+  return await response.json();
+}

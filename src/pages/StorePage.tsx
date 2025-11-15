@@ -8,23 +8,38 @@ import {
   type ItemCategory,
   type StoreItem,
 } from "../mocks/storeMock";
-import { fetchCandyCount } from "../api/auth";
+import { fetchCandyCount, spendCandy, getPurchaseHistory } from "../api/auth";
 
 export function StorePage() {
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState<ItemCategory>('cafe');
+  const [selectedCategory, setSelectedCategory] =
+    useState<ItemCategory>("cafe");
   const [userCandy, setUserCandy] = useState(0);
   const [ownedItems, setOwnedItems] = useState<Set<string>>(new Set()); // 구매한 아이템 ID
+  const [showHistory, setShowHistory] = useState(false);
+  const [purchaseHistory, setPurchaseHistory] = useState<any[]>([]);
+
+  const loadCandyCount = async () => {
+    try {
+      const data = await fetchCandyCount();
+      setUserCandy(data.candy);
+    } catch (error) {
+      console.error("Failed to fetch candy count:", error);
+    }
+  };
+
+  const loadPurchaseHistory = async () => {
+    try {
+      const history = await getPurchaseHistory();
+      setPurchaseHistory(history);
+      setShowHistory(true);
+    } catch (error) {
+      console.error("Failed to fetch purchase history:", error);
+      alert("구매내역을 불러오는데 실패했습니다.");
+    }
+  };
 
   useEffect(() => {
-    const loadCandyCount = async () => {
-      try {
-        const data = await fetchCandyCount();
-        setUserCandy(data.candy);
-      } catch (error) {
-        console.error("Failed to fetch candy count:", error);
-      }
-    };
     loadCandyCount();
   }, []);
 
@@ -34,14 +49,14 @@ export function StorePage() {
   );
 
   // 구매 처리
-  const handlePurchase = (item: StoreItem) => {
+  const handlePurchase = async (item: StoreItem) => {
     if (ownedItems.has(item.id)) {
-      alert('이미 구매한 아이템입니다!');
+      alert("이미 구매한 아이템입니다!");
       return;
     }
 
     if (userCandy < item.price) {
-      alert('캔디가 부족합니다! 문제를 더 풀어보세요.');
+      alert("캔디가 부족합니다! 문제를 더 풀어보세요.");
       return;
     }
 
@@ -50,9 +65,22 @@ export function StorePage() {
     );
 
     if (confirmed) {
-      setUserCandy(userCandy - item.price);
-      setOwnedItems(new Set(ownedItems).add(item.id));
-      alert(`${item.name}을(를) 구매했습니다! 🎉`);
+      try {
+        // 백엔드 API 호출
+        await spendCandy(item.price, item.name);
+
+        // 구매 성공 후 최신 캔디 잔액 다시 불러오기
+        await loadCandyCount();
+
+        // 구매한 아이템 목록 업데이트
+        setOwnedItems(new Set(ownedItems).add(item.id));
+        alert(
+          `${item.name}을(를) 구매했습니다! 🎉\n\n상품권은 1영업일 이내에 메일로 전송됩니다.`
+        );
+      } catch (error) {
+        console.error("구매 실패:", error);
+        alert("구매 중 오류가 발생했습니다. 다시 시도해주세요.");
+      }
     }
   };
 
@@ -69,12 +97,20 @@ export function StorePage() {
           </p>
         </div>
 
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-        >
-          대시보드로
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={loadPurchaseHistory}
+            className="px-6 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-medium hover:bg-indigo-200 transition-colors"
+          >
+            구매내역 확인
+          </button>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+          >
+            대시보드로
+          </button>
+        </div>
       </div>
 
       {/* User Candy Display */}
@@ -96,6 +132,64 @@ export function StorePage() {
         </div>
       </div>
 
+      {/* Purchase History Modal */}
+      {showHistory && (
+        <div className="fixed inset-0 bg-gray-100/80 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-bold text-gray-900">구매내역</h2>
+              <button
+                onClick={() => setShowHistory(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            {purchaseHistory.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">구매내역이 없습니다.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {purchaseHistory.map((item) => (
+                  <div
+                    key={item.id}
+                    className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-bold text-lg text-gray-900">
+                          {item.itemName}
+                        </h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {new Date(item.createdAt).toLocaleDateString(
+                            "ko-KR",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-lg">
+                        <span className="text-xl">🍬</span>
+                        <span className="font-bold text-lg text-red-600">
+                          -{item.amount}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Category Tabs */}
       <div className="flex gap-2 w-full border-b border-gray-200 overflow-x-auto">
         {(Object.keys(categoryLabels) as ItemCategory[]).map((category) => (
@@ -104,8 +198,8 @@ export function StorePage() {
             onClick={() => setSelectedCategory(category)}
             className={`px-6 py-3 font-semibold text-lg transition-colors relative whitespace-nowrap ${
               selectedCategory === category
-                ? 'text-indigo-600'
-                : 'text-gray-500 hover:text-gray-700'
+                ? "text-indigo-600"
+                : "text-gray-500 hover:text-gray-700"
             }`}
           >
             {categoryLabels[category]}
@@ -127,8 +221,10 @@ export function StorePage() {
             return (
               <div
                 key={item.id}
-                className={`${colors.bg} border-2 ${colors.border} rounded-2xl p-6 flex flex-col gap-4 transition-all hover:shadow-lg ${
-                  isOwned ? 'opacity-75' : 'hover:scale-105'
+                className={`${colors.bg} border-2 ${
+                  colors.border
+                } rounded-2xl p-6 flex flex-col gap-4 transition-all hover:shadow-lg ${
+                  isOwned ? "opacity-75" : "hover:scale-105"
                 }`}
               >
                 {/* Rarity Badge */}
@@ -180,13 +276,17 @@ export function StorePage() {
                     disabled={isOwned || !canAfford}
                     className={`w-full py-3 rounded-xl font-bold text-lg transition-all ${
                       isOwned
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                         : canAfford
-                        ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md hover:shadow-lg'
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        ? "bg-indigo-600 text-white hover:bg-indigo-700 shadow-md hover:shadow-lg"
+                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
                     }`}
                   >
-                    {isOwned ? '구매 완료' : canAfford ? '구매하기' : '캔디 부족'}
+                    {isOwned
+                      ? "구매 완료"
+                      : canAfford
+                      ? "구매하기"
+                      : "캔디 부족"}
                   </button>
                 </div>
               </div>
