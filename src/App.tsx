@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ParentRoute } from "./components/ParentRoute";
 import { ChildRoute } from "./components/ChildRoute";
+import { AdminRoute } from "./components/AdminRoute";
 import { PublicOnlyRoute } from "./components/PublicOnlyRoute";
 import { HomeRedirect } from "./components/HomeRedirect";
 import { LoginPage } from "./pages/LoginPage";
@@ -22,6 +23,7 @@ import { ParentPaymentPage } from "./pages/parent/ParentPaymentPage";
 import { ParentMentoringListPage } from "./pages/parent/ParentMentoringListPage";
 import { ParentMentoringApplyPage } from "./pages/parent/ParentMentoringApplyPage";
 import { ParentLearningReportPage } from "./pages/parent/ParentLearningReportPage";
+import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
 
 function App() {
   return (
@@ -177,6 +179,16 @@ function App() {
             }
           />
         </Route>
+
+        {/* Admin routes */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminDashboardPage />
+            </AdminRoute>
+          }
+        />
 
         {/* Catch-all route - redirect based on auth state */}
         <Route path="*" element={<HomeRedirect />} />

@@ -4,7 +4,7 @@ import { authFetch } from "../api/auth";
 
 export function FloatingRoleButton() {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentRole, setCurrentRole] = useState<"parent" | "child" | null>(
+  const [currentRole, setCurrentRole] = useState<"parent" | "child" | "admin" | null>(
     null
   );
   const [loading, setLoading] = useState(false);
@@ -24,12 +24,25 @@ export function FloatingRoleButton() {
     }
   };
 
-  const handleRoleChange = async (newRole: "parent" | "child") => {
+  const getRoleLabel = (role: string | null) => {
+    switch (role) {
+      case "parent":
+        return "부모";
+      case "child":
+        return "자식";
+      case "admin":
+        return "관리자";
+      default:
+        return "알 수 없음";
+    }
+  };
+
+  const handleRoleChange = async (newRole: "parent" | "child" | "admin") => {
     if (loading || newRole === currentRole) return;
 
     if (
       !confirm(
-        `정말 역할을 ${newRole === "parent" ? "부모" : "자식"}(으)로 변경하시겠습니까?\n현재 페이지를 벗어나게 됩니다.`
+        `정말 역할을 ${getRoleLabel(newRole)}(으)로 변경하시겠습니까?\n현재 페이지를 벗어나게 됩니다.`
       )
     ) {
       return;
@@ -52,6 +65,8 @@ export function FloatingRoleButton() {
       // 역할에 맞는 페이지로 리다이렉트
       if (newRole === "parent") {
         navigate("/parent/dashboard");
+      } else if (newRole === "admin") {
+        navigate("/admin");
       } else {
         navigate("/dashboard");
       }
@@ -103,11 +118,35 @@ export function FloatingRoleButton() {
               <p className="text-gray-700 text-center mb-6">
                 현재 역할:{" "}
                 <span className="font-bold text-purple-600">
-                  {currentRole === "parent" ? "부모" : "자식"}
+                  {getRoleLabel(currentRole)}
                 </span>
               </p>
 
               <div className="space-y-3">
+                {/* Admin Role Button */}
+                <button
+                  onClick={() => handleRoleChange("admin")}
+                  disabled={loading || currentRole === "admin"}
+                  className={`w-full p-4 rounded-xl border-2 transition-all ${
+                    currentRole === "admin"
+                      ? "border-red-600 bg-red-50 cursor-not-allowed"
+                      : "border-gray-200 bg-white hover:border-red-600 hover:bg-red-50"
+                  } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="text-4xl">🔧</div>
+                    <div className="flex-1 text-left">
+                      <h3 className="font-bold text-gray-900 text-lg">관리자</h3>
+                      <p className="text-sm text-gray-600">
+                        시스템 관리 및 승인 처리
+                      </p>
+                    </div>
+                    {currentRole === "admin" && (
+                      <div className="text-red-600 text-2xl">✓</div>
+                    )}
+                  </div>
+                </button>
+
                 {/* Parent Role Button */}
                 <button
                   onClick={() => handleRoleChange("parent")}
