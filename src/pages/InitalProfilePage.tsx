@@ -52,9 +52,9 @@ export function InitUserPage() {
   };
 
   return (
-    <div className="w-full min-h-screen px-4 pt-8 pb-12 bg-white sm:px-6 md:px-8">
+    <div className="w-full min-h-screen px-4 pt-8 bg-white sm:px-6 md:px-8">
       {/* Role Selection Cards */}
-      <div className="w-full mt-8 sm:mt-16 md:mt-24 lg:mt-32">
+      <div className="w-full mt-4">
         <div className="flex flex-col items-center justify-center gap-6 mx-auto lg:flex-row md:gap-8 max-w-7xl">
 
           {/* Parent Card */}
