@@ -1,0 +1,308 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  storeItems,
+  categoryLabels,
+  rarityColors,
+  rarityLabels,
+  type ItemCategory,
+  type StoreItem,
+} from "../mocks/storeMock";
+import { fetchCandyCount, spendCandy, getPurchaseHistory } from "../api/auth";
+
+export function StorePage() {
+  const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] =
+    useState<ItemCategory>("cafe");
+  const [userCandy, setUserCandy] = useState(0);
+  const [ownedItems, setOwnedItems] = useState<Set<string>>(new Set()); // 구매한 아이템 ID
+  const [showHistory, setShowHistory] = useState(false);
+  const [purchaseHistory, setPurchaseHistory] = useState<any[]>([]);
+
+  const loadCandyCount = async () => {
+    try {
+      const data = await fetchCandyCount();
+      setUserCandy(data.candy);
+    } catch (error) {
+      console.error("Failed to fetch candy count:", error);
+    }
+  };
+
+  const loadPurchaseHistory = async () => {
+    try {
+      const history = await getPurchaseHistory();
+      setPurchaseHistory(history);
+      setShowHistory(true);
+    } catch (error) {
+      console.error("Failed to fetch purchase history:", error);
+      alert("구매내역을 불러오는데 실패했습니다.");
+    }
+  };
+
+  useEffect(() => {
+    loadCandyCount();
+  }, []);
+
+  // 카테고리별 아이템 필터링
+  const filteredItems = storeItems.filter(
+    (item) => item.category === selectedCategory
+  );
+
+  // 구매 처리
+  const handlePurchase = async (item: StoreItem) => {
+    if (ownedItems.has(item.id)) {
+      alert("이미 구매한 아이템입니다!");
+      return;
+    }
+
+    if (userCandy < item.price) {
+      alert("캔디가 부족합니다! 문제를 더 풀어보세요.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `${item.name}을(를) ${item.price} 캔디에 구매하시겠습니까?`
+    );
+
+    if (confirmed) {
+      try {
+        // 백엔드 API 호출
+        await spendCandy(item.price, item.name);
+
+        // 구매 성공 후 최신 캔디 잔액 다시 불러오기
+        await loadCandyCount();
+
+        // 구매한 아이템 목록 업데이트
+        setOwnedItems(new Set(ownedItems).add(item.id));
+        alert(
+          `${item.name}을(를) 구매했습니다! 🎉\n\n상품권은 1영업일 이내에 메일로 전송됩니다.`
+        );
+      } catch (error) {
+        console.error("구매 실패:", error);
+        alert("구매 중 오류가 발생했습니다. 다시 시도해주세요.");
+      }
+    }
+  };
+
+  return (
+    <div className="bg-white box-border flex flex-col gap-8 items-start pb-[400px] pt-8 px-8 relative min-h-[calc(100vh+400px)] w-full">
+      {/* Header */}
+      <div className="flex justify-between items-center w-full">
+        <div className="flex flex-col gap-2">
+          <h1 className="font-bold leading-[57.6px] text-[#101828] text-5xl">
+            상점
+          </h1>
+          <p className="font-normal leading-[27px] text-[#475467] text-lg">
+            캔디로 멋진 아이템을 구매하세요
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={loadPurchaseHistory}
+            className="px-6 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-medium hover:bg-indigo-200 transition-colors"
+          >
+            구매내역 확인
+          </button>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+          >
+            대시보드로
+          </button>
+        </div>
+      </div>
+
+      {/* User Candy Display */}
+      <div className="w-full bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-6 border-2 border-yellow-300 shadow-md">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <span className="text-6xl">🍬</span>
+            <div className="flex flex-col">
+              <p className="text-sm text-yellow-600 font-medium">보유 캔디</p>
+              <p className="text-4xl font-bold text-yellow-700">{userCandy}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate("/rewards")}
+            className="px-6 py-3 bg-yellow-500 text-white rounded-xl font-semibold hover:bg-yellow-600 transition-colors shadow-md"
+          >
+            더 모으러 가기 →
+          </button>
+        </div>
+      </div>
+
+      {/* Purchase History Modal */}
+      {showHistory && (
+        <div className="fixed inset-0 bg-gray-100/80 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-bold text-gray-900">구매내역</h2>
+              <button
+                onClick={() => setShowHistory(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            {purchaseHistory.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">구매내역이 없습니다.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {purchaseHistory.map((item) => (
+                  <div
+                    key={item.id}
+                    className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-bold text-lg text-gray-900">
+                          {item.itemName}
+                        </h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {new Date(item.createdAt).toLocaleDateString(
+                            "ko-KR",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-lg">
+                        <span className="text-xl">🍬</span>
+                        <span className="font-bold text-lg text-red-600">
+                          -{item.amount}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Category Tabs */}
+      <div className="flex gap-2 w-full border-b border-gray-200 overflow-x-auto">
+        {(Object.keys(categoryLabels) as ItemCategory[]).map((category) => (
+          <button
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            className={`px-6 py-3 font-semibold text-lg transition-colors relative whitespace-nowrap ${
+              selectedCategory === category
+                ? "text-indigo-600"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            {categoryLabels[category]}
+            {selectedCategory === category && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"></div>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Items Grid */}
+      <div className="w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredItems.map((item) => {
+            const isOwned = ownedItems.has(item.id);
+            const canAfford = userCandy >= item.price;
+            const colors = rarityColors[item.rarity];
+
+            return (
+              <div
+                key={item.id}
+                className={`${colors.bg} border-2 ${
+                  colors.border
+                } rounded-2xl p-6 flex flex-col gap-4 transition-all hover:shadow-lg ${
+                  isOwned ? "opacity-75" : "hover:scale-105"
+                }`}
+              >
+                {/* Rarity Badge */}
+                <div className="flex justify-between items-start">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${colors.bg} ${colors.text} border ${colors.border}`}
+                  >
+                    {rarityLabels[item.rarity]}
+                  </span>
+                  {isOwned && (
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-300">
+                      소유중
+                    </span>
+                  )}
+                </div>
+
+                {/* Item Icon */}
+                <div className="flex justify-center">
+                  <span className="text-7xl">{item.icon}</span>
+                </div>
+
+                {/* Item Info */}
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-bold text-xl text-gray-900 text-center">
+                    {item.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 text-center min-h-[40px]">
+                    {item.description}
+                  </p>
+                  {/* Value Display */}
+                  <div className="flex justify-center">
+                    <span className="px-4 py-2 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg border border-indigo-200 font-bold text-indigo-700">
+                      {item.value}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Price and Purchase Button */}
+                <div className="flex flex-col gap-2 mt-auto">
+                  <div className="flex items-center justify-center gap-2 bg-white px-4 py-2 rounded-lg border-2 border-gray-200">
+                    <span className="text-2xl">🍬</span>
+                    <span className="font-bold text-2xl text-gray-800">
+                      {item.price}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => handlePurchase(item)}
+                    disabled={isOwned || !canAfford}
+                    className={`w-full py-3 rounded-xl font-bold text-lg transition-all ${
+                      isOwned
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : canAfford
+                        ? "bg-indigo-600 text-white hover:bg-indigo-700 shadow-md hover:shadow-lg"
+                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    }`}
+                  >
+                    {isOwned
+                      ? "구매 완료"
+                      : canAfford
+                      ? "구매하기"
+                      : "캔디 부족"}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Empty State */}
+        {filteredItems.length === 0 && (
+          <div className="bg-gray-50 rounded-xl p-12 text-center">
+            <p className="text-gray-500 text-lg">
+              이 카테고리에는 아직 아이템이 없습니다
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
