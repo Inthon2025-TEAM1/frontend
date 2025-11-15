@@ -37,29 +37,7 @@ export function Header() {
             <h1 className="text-2xl font-bold text-indigo-600">EduPlay</h1>
           </Link>
 
-          {/* Navigation Links */}
-          <div className="items-center hidden space-x-8 md:flex">
-            <Link
-              to="/dashboard"
-              className="font-medium text-gray-700 hover:text-indigo-600"
-            >
-              대시보드
-            </Link>
 
-
-            <Link
-              to="/rewards"
-              className="font-medium text-gray-700 hover:text-indigo-600"
-            >
-              리워드
-            </Link>
-            <Link
-              to="/store"
-              className="font-medium text-gray-700 hover:text-indigo-600"
-            >
-              상점
-            </Link>
-          </div>
 
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
