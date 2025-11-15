@@ -1,15 +1,24 @@
-import { useState } from "react";
+'use client'
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { ProfileHeader } from "../components/dashboard/ProfileHeader";
 import { CharacterGachaBanner } from "../components/dashboard/CharacterGachaBanner";
 import { QuizCategoryCard } from "../components/dashboard/QuizCategoryCard";
+import { authFetch } from "../api/auth";
 
 export function DashboardPage() {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [selectedGrade, setSelectedGrade] = useState<string>("전체");
+  useEffect(()=>{
+    const fetchData = async () => {
 
+     console.log('asldfhas;lghsdkfhalsekfj', await authFetch("/api/quiz", {method:"GET"}))
+    }
+    fetchData();
+
+  },[])
   const handleLogout = async () => {
     try {
       await logout();
