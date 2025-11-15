@@ -90,7 +90,35 @@ export async function postWithAuth(url: string, data: unknown) {
     method: "POST",
     body: JSON.stringify(data),
   });
-  return await response.json();
+  
+  // 응답이 성공적이지 않으면 에러 처리
+  if (!response.ok) {
+    const errorText = await response.text();
+    let errorMessage = "요청에 실패했습니다.";
+    
+    try {
+      const errorJson = JSON.parse(errorText);
+      errorMessage = errorJson.message || errorMessage;
+    } catch {
+      // JSON 파싱 실패 시 텍스트 그대로 사용
+      errorMessage = errorText || errorMessage;
+    }
+    
+    throw new Error(errorMessage);
+  }
+  
+  // 응답 본문이 비어있는지 확인
+  const text = await response.text();
+  if (!text) {
+    return {};
+  }
+  
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    console.error("JSON 파싱 실패:", error);
+    throw new Error("응답을 파싱할 수 없습니다.");
+  }
 }
 
 /**
