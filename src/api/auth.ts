@@ -90,7 +90,18 @@ export async function postWithAuth(url: string, data: unknown) {
     method: "POST",
     body: JSON.stringify(data),
   });
-  return await response.json();
+
+  const text = await response.text();
+  if (!text) {
+    throw new Error('Empty response from server');
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    console.error('Failed to parse JSON:', text);
+    throw new Error(`Invalid JSON response: ${text}`);
+  }
 }
 
 /**

@@ -21,7 +21,7 @@ export function InitUserPage() {
       return;
     }
     // console.log(await axios.post("api/auth/register", {role:selectedRole}))
-    const response = await postWithAuth("api/auth/register", {
+    const response = await postWithAuth("/api/auth/register", {
       role: selectedRole,
     });
     if (response.role === "child") {
