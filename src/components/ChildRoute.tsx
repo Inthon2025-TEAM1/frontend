@@ -31,7 +31,7 @@ export function ChildRoute({ children }: ChildRouteProps) {
 
       try {
         const response = await authFetch("/api/user/role", { method: "GET" });
-
+        console.log("ChildRoute - Fetched role, status:", response.status);
         if (!response.ok) {
           console.error(
             "ChildRoute - Failed to fetch role, status:",
@@ -68,7 +68,7 @@ export function ChildRoute({ children }: ChildRouteProps) {
     console.log("ChildRoute - Loading... authLoading:", authLoading, "roleLoading:", roleLoading, "isInitUserPage:", isInitUserPage);
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="w-12 h-12 border-b-2 border-blue-600 rounded-full animate-spin"></div>
       </div>
     );
   }

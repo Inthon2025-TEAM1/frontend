@@ -155,74 +155,54 @@ export function HomePage() {
       {/* Footer */}
       <footer className="py-12 text-gray-300 bg-gray-900">
         <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div className="grid gap-8 md:grid-cols-4">
+          <div className="grid gap-8 md:grid-cols-3">
+            {/* 회사 정보 */}
             <div>
               <h3 className="mb-4 text-lg font-bold text-white">EduPlay</h3>
-              <p className="text-sm">
+              <p className="mb-3 text-sm text-gray-400">
                 게이미피케이션으로 더 재미있는 학습을 만듭니다.
               </p>
+              <p className="text-xs text-gray-500">
+                사업자 등록번호: 000-00-00000<br />
+                통신판매업 신고번호: 제2025-서울-00000호
+              </p>
             </div>
+
+            {/* 링크 */}
             <div>
-              <h4 className="mb-4 font-semibold text-white">서비스</h4>
+              <h4 className="mb-4 font-semibold text-white">안내</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="#" className="hover:text-white">
-                    문제 풀이
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white">
-                    보상 시스템
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white">
-                    학습 진도
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="mb-4 font-semibold text-white">지원</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a href="#" className="hover:text-white">
-                    고객센터
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white">
-                    자주 묻는 질문
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white">
-                    문의하기
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="mb-4 font-semibold text-white">회사</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="/about" className="transition-colors hover:text-white">
                     소개
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="/terms" className="transition-colors hover:text-white">
                     이용약관
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="/privacy" className="transition-colors hover:text-white">
                     개인정보처리방침
                   </a>
                 </li>
               </ul>
             </div>
+
+            {/* 제작자 및 문의 */}
+            <div>
+              <h4 className="mb-4 font-semibold text-white">문의</h4>
+              <p className="mb-2 text-sm text-gray-400">
+                제작자: 신준혁, 이현민, 정단우, 최병주
+              </p>
+              <p className="text-sm text-gray-400">
+                이메일: <a href="mailto:sjhsjh8520@korea.ac.kr" className="text-indigo-400 transition-colors hover:text-indigo-300">sjhsjh8520@korea.ac.kr</a>
+              </p>
+            </div>
           </div>
+
+          {/* Copyright */}
           <div className="pt-8 mt-8 text-sm text-center border-t border-gray-800">
             <p>&copy; 2025 EduPlay. All rights reserved.</p>
           </div>

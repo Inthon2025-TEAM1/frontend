@@ -59,7 +59,7 @@ export function ParentLearningReportPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <div className="w-16 h-16 mx-auto mb-4 border-b-2 border-purple-600 rounded-full animate-spin"></div>
           <p className="text-xl text-gray-600">자녀 목록을 불러오는 중...</p>
         </div>
       </div>
@@ -86,16 +86,16 @@ export function ParentLearningReportPage() {
   // Show child selection screen if no child is selected yet
   if (!selectedChild) {
     return (
-      <div className="bg-gray-50 min-h-screen p-8">
+      <div className="min-h-screen p-8 bg-gray-50">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <button
               onClick={() => navigate("/parent/dashboard")}
-              className="mb-4 text-purple-600 hover:text-purple-700 font-semibold flex items-center gap-2"
+              className="flex items-center gap-2 mb-4 font-semibold text-purple-600 hover:text-purple-700"
             >
               ← 대시보드로 돌아가기
             </button>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="mb-2 text-4xl font-bold text-gray-900">
               📊 학습 리포트
             </h1>
             <p className="text-lg text-gray-600">
@@ -104,9 +104,9 @@ export function ParentLearningReportPage() {
           </div>
 
           {children.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-              <div className="text-6xl mb-4">👶</div>
-              <p className="text-xl text-gray-600 mb-6">등록된 자녀가 없습니다.</p>
+            <div className="p-12 text-center bg-white shadow-lg rounded-2xl">
+              <div className="mb-4 text-6xl">👶</div>
+              <p className="mb-6 text-xl text-gray-600">등록된 자녀가 없습니다.</p>
               <button
                 onClick={() => navigate("/parent/dashboard")}
                 className="px-6 py-3 text-white bg-purple-600 rounded-lg hover:bg-purple-700"
@@ -115,15 +115,15 @@ export function ParentLearningReportPage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {children.map((child) => (
                 <button
                   key={child.id}
                   onClick={() => handleChildSelect(child)}
-                  className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left"
+                  className="p-6 text-left transition-all bg-white shadow-lg rounded-2xl hover:shadow-xl hover:scale-105"
                 >
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                    <div className="flex items-center justify-center w-16 h-16 text-2xl font-bold text-white rounded-full bg-gradient-to-br from-purple-400 to-indigo-500">
                       {child.name ? child.name.charAt(0).toUpperCase() : "?"}
                     </div>
                     <div>
@@ -149,7 +149,7 @@ export function ParentLearningReportPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <div className="w-16 h-16 mx-auto mb-4 border-b-2 border-purple-600 rounded-full animate-spin"></div>
           <p className="text-xl text-gray-600">{selectedChild.name}님의 분석 중...</p>
         </div>
       </div>
@@ -164,7 +164,7 @@ export function ParentLearningReportPage() {
           <p className="mb-4 text-xl text-red-600">{error}</p>
           <button
             onClick={() => setSelectedChild(null)}
-            className="px-6 py-3 text-white bg-purple-600 rounded-lg hover:bg-purple-700 mr-4"
+            className="px-6 py-3 mr-4 text-white bg-purple-600 rounded-lg hover:bg-purple-700"
           >
             자녀 선택으로 돌아가기
           </button>
@@ -187,7 +187,7 @@ export function ParentLearningReportPage() {
           <p className="mb-4 text-xl text-gray-600">분석 데이터가 없습니다.</p>
           <button
             onClick={() => setSelectedChild(null)}
-            className="px-6 py-3 text-white bg-purple-600 rounded-lg hover:bg-purple-700 mr-4"
+            className="px-6 py-3 mr-4 text-white bg-purple-600 rounded-lg hover:bg-purple-700"
           >
             자녀 선택으로 돌아가기
           </button>
@@ -221,17 +221,17 @@ export function ParentLearningReportPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen p-8 bg-gray-50">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => setSelectedChild(null)}
-            className="mb-4 text-purple-600 hover:text-purple-700 font-semibold flex items-center gap-2"
+            className="flex items-center gap-2 mb-4 font-semibold text-purple-600 hover:text-purple-700"
           >
             ← 자녀 선택으로 돌아가기
           </button>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="mb-2 text-4xl font-bold text-gray-900">
             📊 학습 리포트 - {selectedChild.name}
           </h1>
           <p className="text-lg text-gray-600">
@@ -242,7 +242,7 @@ export function ParentLearningReportPage() {
         {/* Overall Score */}
         <div className={`mb-8 p-8 rounded-2xl shadow-lg border-2 ${getScoreBg(analysisData.overallScore)}`}>
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">종합 점수</h2>
+            <h2 className="mb-4 text-2xl font-bold text-gray-900">종합 점수</h2>
             <div className={`text-6xl font-bold ${getScoreColor(analysisData.overallScore)} mb-2`}>
               {analysisData.overallScore}점
             </div>
@@ -254,17 +254,17 @@ export function ParentLearningReportPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Weaknesses */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+          <div className="p-6 bg-white shadow-lg rounded-2xl">
+            <h2 className="flex items-center gap-2 mb-6 text-2xl font-bold text-gray-900">
               <span className="text-3xl">🎯</span>
               약점 분석
             </h2>
 
             {analysisData.weaknesses.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">🎉</div>
+              <div className="py-12 text-center">
+                <div className="mb-4 text-6xl">🎉</div>
                 <p className="text-gray-600">약점이 발견되지 않았습니다!</p>
               </div>
             ) : (
@@ -272,9 +272,9 @@ export function ParentLearningReportPage() {
                 {analysisData.weaknesses.map((weakness: Weakness, index: number) => (
                   <div
                     key={index}
-                    className="p-4 border-2 border-gray-200 rounded-xl hover:border-purple-300 transition-colors"
+                    className="p-4 transition-colors border-2 border-gray-200 rounded-xl hover:border-purple-300"
                   >
-                    <div className="flex justify-between items-start mb-3">
+                    <div className="flex items-start justify-between mb-3">
                       <h3 className="text-lg font-bold text-gray-900">
                         {weakness.chapterName}
                       </h3>
@@ -285,12 +285,12 @@ export function ParentLearningReportPage() {
 
                     {weakness.commonMistakes.length > 0 && (
                       <div className="mt-3">
-                        <p className="text-sm font-semibold text-gray-700 mb-2">
+                        <p className="mb-2 text-sm font-semibold text-gray-700">
                           자주 틀리는 유형:
                         </p>
                         <ul className="space-y-1">
                           {weakness.commonMistakes.map((mistake, idx) => (
-                            <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
+                            <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
                               <span className="text-red-500">•</span>
                               {mistake}
                             </li>
@@ -305,15 +305,15 @@ export function ParentLearningReportPage() {
           </div>
 
           {/* Improvement Areas */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+          <div className="p-6 bg-white shadow-lg rounded-2xl">
+            <h2 className="flex items-center gap-2 mb-6 text-2xl font-bold text-gray-900">
               <span className="text-3xl">📈</span>
               개선이 필요한 영역
             </h2>
 
             {analysisData.improvementAreas.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">✅</div>
+              <div className="py-12 text-center">
+                <div className="mb-4 text-6xl">✅</div>
                 <p className="text-gray-600">모든 영역에서 우수합니다!</p>
               </div>
             ) : (
@@ -321,10 +321,10 @@ export function ParentLearningReportPage() {
                 {analysisData.improvementAreas.map((area, index) => (
                   <div
                     key={index}
-                    className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl"
+                    className="p-4 border-2 border-blue-200 bg-blue-50 rounded-xl"
                   >
-                    <p className="text-gray-800 flex items-start gap-2">
-                      <span className="text-blue-600 font-bold">{index + 1}.</span>
+                    <p className="flex items-start gap-2 text-gray-800">
+                      <span className="font-bold text-blue-600">{index + 1}.</span>
                       {area}
                     </p>
                   </div>
@@ -335,26 +335,26 @@ export function ParentLearningReportPage() {
         </div>
 
         {/* Recommendations */}
-        <div className="mt-6 bg-white rounded-2xl shadow-lg p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        <div className="p-6 mt-6 bg-white shadow-lg rounded-2xl">
+          <h2 className="flex items-center gap-2 mb-6 text-2xl font-bold text-gray-900">
             <span className="text-3xl">💡</span>
             학습 추천사항
           </h2>
 
           {analysisData.recommendations.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">👍</div>
+            <div className="py-12 text-center">
+              <div className="mb-4 text-6xl">👍</div>
               <p className="text-gray-600">현재 학습 상태가 양호합니다!</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {analysisData.recommendations.map((recommendation, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl"
+                  className="p-4 border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl"
                 >
-                  <p className="text-gray-800 flex items-start gap-2">
-                    <span className="text-purple-600 font-bold text-xl">✓</span>
+                  <p className="flex items-start gap-2 text-gray-800">
+                    <span className="text-xl font-bold text-purple-600">✓</span>
                     {recommendation}
                   </p>
                 </div>
@@ -364,22 +364,22 @@ export function ParentLearningReportPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-8 flex gap-4 justify-center">
+        <div className="flex justify-center gap-4 mt-8">
           <button
             onClick={() => loadAnalysis(selectedChild.id)}
-            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl"
+            className="px-8 py-4 text-lg font-bold text-white transition-all shadow-lg bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl hover:from-purple-700 hover:to-indigo-700 hover:shadow-xl"
           >
             🔄 다시 분석하기
           </button>
           <button
             onClick={() => setSelectedChild(null)}
-            className="px-8 py-4 bg-purple-100 text-purple-700 rounded-xl font-bold text-lg hover:bg-purple-200 transition-colors"
+            className="px-8 py-4 text-lg font-bold text-purple-700 transition-colors bg-purple-100 rounded-xl hover:bg-purple-200"
           >
             다른 자녀 선택
           </button>
           <button
             onClick={() => navigate("/parent/dashboard")}
-            className="px-8 py-4 bg-gray-200 text-gray-700 rounded-xl font-bold text-lg hover:bg-gray-300 transition-colors"
+            className="px-8 py-4 text-lg font-bold text-gray-700 transition-colors bg-gray-200 rounded-xl hover:bg-gray-300"
           >
             대시보드로 이동
           </button>

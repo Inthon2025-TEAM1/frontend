@@ -24,6 +24,9 @@ import { ParentMentoringListPage } from "./pages/parent/ParentMentoringListPage"
 import { ParentMentoringApplyPage } from "./pages/parent/ParentMentoringApplyPage";
 import { ParentLearningReportPage } from "./pages/parent/ParentLearningReportPage";
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
+import { AboutPage } from "./pages/AboutPage";
+import { TermsPage } from "./pages/TermsPage";
+import { PrivacyPage } from "./pages/PrivacyPage";
 
 function App() {
   return (
@@ -75,6 +78,11 @@ function App() {
               </PublicOnlyRoute>
             }
           />
+
+          {/* Public pages */}
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
 
           {/* Protected routes (require authentication) */}
           <Route

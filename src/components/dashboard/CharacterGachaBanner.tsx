@@ -30,7 +30,7 @@ export function CharacterGachaBanner({
         </div>
         <button
           onClick={onNavigate}
-          className="bg-white h-14 relative rounded-xl shadow-sm shrink-0 w-auto min-w-fit px-4 md:px-6 lg:px-8 hover:opacity-90 transition-opacity flex items-center gap-2"
+          className="relative flex items-center w-auto gap-2 px-4 transition-opacity bg-white shadow-sm h-14 rounded-xl shrink-0 min-w-fit md:px-6 lg:px-8 hover:opacity-90"
         >
           <div className="relative shrink-0 size-5">
             <img
