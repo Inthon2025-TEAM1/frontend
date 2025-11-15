@@ -1,16 +1,37 @@
-import { useState } from "react";
-import { createPayment } from "../../api/auth";
+import { useState, useEffect } from "react";
+import { createPayment, getChildrenCount } from "../../api/auth";
 import { useAuth } from "../../hooks/useAuth";
 
 export function ParentPaymentPage() {
   const { user } = useAuth();
-  const [childrenCount, setChildrenCount] = useState(2);
+  const [childrenCount, setChildrenCount] = useState(0);
   const [depositorName, setDepositorName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadingCount, setLoadingCount] = useState(true);
 
   const pricePerChild = 9900; // 자녀 1명당 월 9,900원
   const totalPrice = childrenCount * pricePerChild;
+
+  // 자녀 수 조회
+  useEffect(() => {
+    const fetchChildrenCount = async () => {
+      try {
+        setLoadingCount(true);
+        const data = await getChildrenCount();
+        setChildrenCount(data.count);
+      } catch (err) {
+        console.error("Failed to fetch children count:", err);
+        setError("자녀 수를 불러오는데 실패했습니다.");
+      } finally {
+        setLoadingCount(false);
+      }
+    };
+
+    if (user) {
+      fetchChildrenCount();
+    }
+  }, [user]);
 
   const handlePayment = async () => {
     if (!depositorName.trim()) {
@@ -110,29 +131,24 @@ export function ParentPaymentPage() {
             </div>
           </div>
 
-          {/* 자녀 수 선택 */}
+          {/* 자녀 수 표시 (읽기 전용) */}
           <div className="border-t border-gray-200 pt-6">
             <label className="block text-lg font-semibold text-gray-900 mb-3">
               등록된 자녀 수
             </label>
-            <div className="flex items-center gap-4 mb-6">
-              <button
-                onClick={() => setChildrenCount(Math.max(1, childrenCount - 1))}
-                className="w-12 h-12 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-xl transition-colors"
-              >
-                -
-              </button>
-              <div className="flex-1 text-center">
-                <p className="text-4xl font-bold text-indigo-600">
-                  {childrenCount}명
+            <div className="flex items-center justify-center mb-6">
+              <div className="text-center">
+                {loadingCount ? (
+                  <p className="text-2xl text-gray-400">로딩 중...</p>
+                ) : (
+                  <p className="text-4xl font-bold text-indigo-600">
+                    {childrenCount}명
+                  </p>
+                )}
+                <p className="text-sm text-gray-500 mt-2">
+                  자녀 추가/제거는 부모 대시보드에서 가능합니다
                 </p>
               </div>
-              <button
-                onClick={() => setChildrenCount(childrenCount + 1)}
-                className="w-12 h-12 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-xl transition-colors"
-              >
-                +
-              </button>
             </div>
 
             {/* 총 금액 */}

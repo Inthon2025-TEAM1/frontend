@@ -25,6 +25,14 @@ export function ParentHeader() {
             >
               학습 리포트
             </Link>
+
+            <Link
+              to="/parent/mentoring/list"
+              className="text-white/90 hover:text-white font-medium transition-colors"
+            >
+              멘토링 목록
+            </Link>
+
             <Link
               to="/parent/payment"
               className="text-white/90 hover:text-white font-medium transition-colors"
