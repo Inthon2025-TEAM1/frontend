@@ -7,66 +7,68 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { HomePage } from "./pages/HomePage";
 import { InitUserPage } from "./pages/InitalProfilePage";
+import { HomeLayout } from "./pages/HomeLayout";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Redirect root to login */}
-        <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route
-          path="/home"
-          element={
-            <PublicOnlyRoute>
-              <HomePage />
-            </PublicOnlyRoute>
-          }
-        />
 
-        <Route
-          path="/initUser"
-          element={
-            <PublicOnlyRoute>
-              <InitUserPage/>
-            </PublicOnlyRoute>
-          }
-        />
-        {/* Public-only routes (redirect to dashboard if already logged in) */}
-        <Route
-          path="/login"
-          element={
-            <PublicOnlyRoute>
-              <LoginPage />
-            </PublicOnlyRoute>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <PublicOnlyRoute>
-              <RegisterPage />
-            </PublicOnlyRoute>
-          }
-        />
+        <Route path="/" element={<HomeLayout/>}>
+          <Route
+            path="/home"
+            element={
+              <PublicOnlyRoute>
+                <HomePage />
+              </PublicOnlyRoute>
+            }
+          />
 
-        {/* Protected routes (require authentication) */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/initUser"
+            element={
+              <PublicOnlyRoute>
+                <InitUserPage/>
+              </PublicOnlyRoute>
+            }
+          />
+          {/* Public-only routes (redirect to dashboard if already logged in) */}
+          <Route
+            path="/login"
+            element={
+              <PublicOnlyRoute>
+                <LoginPage />
+              </PublicOnlyRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicOnlyRoute>
+                <RegisterPage />
+              </PublicOnlyRoute>
+            }
+          />
 
+          {/* Protected routes (require authentication) */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
         {/* Catch-all route - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

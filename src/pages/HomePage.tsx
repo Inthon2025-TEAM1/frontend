@@ -1,11 +1,9 @@
 import { Link } from "react-router-dom";
-import { Header } from "../components/Header";
 
 export function HomePage() {
   return (
     <div className="min-h-screen bg-linear-to-b from-white to-gray-50">
       {/* Header Navigation */}
-      <Header />
 
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
