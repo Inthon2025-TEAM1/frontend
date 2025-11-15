@@ -10,15 +10,24 @@ export function RegisterPage() {
   const handleGoogleLogin = async () => {
     try {
       await googleLogin();
-      navigate("/dashboard");
+      // 로그인 성공 시 dashboard로 이동
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       console.error("Google login failed:", error);
+      // 에러 발생 시 이동하지 않음
     }
   };
 
   const handleRegister = async (email: string, password: string) => {
-    await register(email, password);
-    navigate("/initUser");
+    try {
+      await register(email, password);
+      // 회원가입 성공 시 dashboard로 이동
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      console.error("Register failed:", error);
+      // 에러 발생 시 이동하지 않음 (RegisterForm에서 에러 표시)
+      throw error;
+    }
   };
 
   return (
