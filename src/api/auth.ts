@@ -99,3 +99,11 @@ export async function postWithAuth(url: string, data: unknown) {
 export async function getProfile() {
   return fetchUserProfile();
 }
+
+/**
+ * Fetch user's candy count
+ */
+export async function fetchCandyCount(): Promise<{ candy: number }> {
+  const response = await authFetch("/api/user/candy");
+  return await response.json();
+}
