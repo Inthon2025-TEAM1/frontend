@@ -1,10 +1,9 @@
 'use client'
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { ProfileHeader } from "../components/dashboard/ProfileHeader";
 import { QuizCategoryCard } from "../components/dashboard/QuizCategoryCard";
-import { authFetch, fetchCandyCount } from "../api/auth";
+import { authFetch } from "../api/auth";
 
 interface Chapter {
   id: number;
@@ -26,12 +25,11 @@ interface QuizCategory {
 
 export function DashboardPage() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [selectedGrade, setSelectedGrade] = useState<string>("전체");
   const [chapters, setChapters] = useState<Array<Chapter>>([])
   const [quizCategories, setQuizCategories] = useState<Array<QuizCategory>>([])
   const [isLoading, setIsLoading] = useState(false);
-  const [candyCount, setCandyCount] = useState<number>(0);
 
   // 색상 배열 (순환 사용)
   const colors: Array<
@@ -74,19 +72,6 @@ export function DashboardPage() {
     if (!gradeLevel) return "";
     return `${gradeLevel}학년`;
   };
-
-  // 캔디 개수 가져오기
-  useEffect(() => {
-    const loadCandyCount = async () => {
-      try {
-        const data = await fetchCandyCount();
-        setCandyCount(data.candy);
-      } catch (error) {
-        console.error("Failed to fetch candy count:", error);
-      }
-    };
-    loadCandyCount();
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -179,14 +164,6 @@ export function DashboardPage() {
 
     fetchData();
   }, [selectedGrade])
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
 
   const handleStartQuiz = (chapterId: number, chapterName: string) => {
     navigate(`/quiz?chapterId=${chapterId}&chapterName=${encodeURIComponent(chapterName)}`);
@@ -194,10 +171,59 @@ export function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="w-full mx-auto px-2 sm:px-4 lg:px-6 py-8">
-        {/* Profile Header */}
+      <div className="w-full mx-auto px-2 sm:px-4 lg:px-6 pt-5 pb-8">
+        {/* Rewards & Store Banner - 캐릭터 뽑기 스타일 */}
         <div className="mb-8 max-w-[95%] mx-auto">
-          <ProfileHeader candyCount={candyCount} onLogout={handleLogout} />
+          <div className="bg-gradient-to-b from-[#6941c6] h-[188.594px] overflow-hidden relative rounded-3xl shadow-lg shrink-0 to-[#10b981] w-full">
+            {/* Decorative circles */}
+            <div className="absolute bg-white/10 right-[-64px] rounded-full size-64 top-[-128px]" />
+            <div className="absolute bg-white/10 left-[-96px] rounded-full size-48 top-[92.59px]" />
+
+            <div className="absolute flex h-[92.594px] items-center justify-between left-12 top-12 w-[calc(100%-96px)]">
+              <div className="h-[92.594px] relative shrink-0 w-auto">
+                <div className="flex flex-col gap-2 h-[92.594px] items-start relative">
+                  <div className="h-[57.594px] relative shrink-0 w-auto">
+                    <p className="font-bold leading-[57.6px] text-5xl text-white whitespace-pre">
+                      리워드 & 상점
+                    </p>
+                  </div>
+                  <div className="h-[27px] relative shrink-0 w-auto">
+                    <p className="font-normal leading-[27px] text-lg text-white/90 whitespace-pre">
+                      보상을 확인하고 아이템을 구매하세요!
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-row gap-3">
+                <Link
+                  to="/rewards"
+                  className="bg-white h-14 w-32 relative rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 border border-gray-100"
+                >
+                  <img
+                    src="/images/candy_icon(2).png"
+                    alt="리워드"
+                    className="w-5 h-5"
+                  />
+                  <p className="font-semibold leading-6 text-[#6941c6] text-lg whitespace-pre">
+                    리워드
+                  </p>
+                </Link>
+                <Link
+                  to="/store"
+                  className="bg-white h-14 w-32 relative rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 border border-gray-100"
+                >
+                  <img
+                    src="/images/store_icon.png"
+                    alt="상점"
+                    className="w-5 h-5"
+                  />
+                  <p className="font-semibold leading-6 text-[#6941c6] text-lg whitespace-pre">
+                    상점
+                  </p>
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Learning Categories */}
