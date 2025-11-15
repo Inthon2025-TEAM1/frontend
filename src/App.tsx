@@ -1,17 +1,20 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { PublicOnlyRoute } from "./components/PublicOnlyRoute";
+import { HomeRedirect } from "./components/HomeRedirect";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { GachaPage } from "./pages/GachaPage";
+import { QuizPage } from "./pages/QuizPage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Redirect root to login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        {/* Redirect root based on auth state */}
+        <Route path="/" element={<HomeRedirect />} />
 
         {/* Public-only routes (redirect to dashboard if already logged in) */}
         <Route
@@ -48,9 +51,25 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/gacha"
+          element={
+            <ProtectedRoute>
+              <GachaPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quiz"
+          element={
+            <ProtectedRoute>
+              <QuizPage />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Catch-all route - redirect to login */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* Catch-all route - redirect based on auth state */}
+        <Route path="*" element={<HomeRedirect />} />
       </Routes>
     </BrowserRouter>
   );

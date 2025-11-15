@@ -10,15 +10,24 @@ export function LoginPage() {
   const handleGoogleLogin = async () => {
     try {
       await googleLogin();
-      navigate("/dashboard");
+      // 로그인 성공 시 dashboard로 이동
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       console.error("Google login failed:", error);
+      // 에러 발생 시 이동하지 않음
     }
   };
 
   const handleEmailLogin = async (email: string, password: string) => {
-    await loginWithEmail(email, password);
-    navigate("/dashboard");
+    try {
+      await loginWithEmail(email, password);
+      // 로그인 성공 시 dashboard로 이동
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      console.error("Email login failed:", error);
+      // 에러 발생 시 이동하지 않음 (LoginForm에서 에러 표시)
+      throw error;
+    }
   };
 
   return (
