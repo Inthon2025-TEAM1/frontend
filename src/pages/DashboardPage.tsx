@@ -42,9 +42,9 @@ export function DashboardPage() {
 
           // 모든 학년의 데이터를 합침
           const allChapters = [
-            ...(grade1Data.data || []),
-            ...(grade2Data.data || []),
-            ...(grade3Data.data || []),
+            ...(Array.isArray(grade1Data) ? grade1Data : []),
+            ...(Array.isArray(grade2Data) ? grade2Data : []),
+            ...(Array.isArray(grade3Data) ? grade3Data : []),
           ];
           setChapters(allChapters);
         } else {
@@ -54,8 +54,7 @@ export function DashboardPage() {
             method: "GET",
           });
           const data = await res.json();
-          console.log(data, 'data')
-          setChapters(data || []);
+          setChapters(Array.isArray(data) ? data : []);
         }
       } catch (error) {
         console.error("Failed to fetch chapters:", error);

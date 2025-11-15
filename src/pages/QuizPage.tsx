@@ -95,7 +95,7 @@ export function QuizPage() {
 
 
 
-          setQuizData(apiResponse);
+          setQuizData(apiResponse.questions);
         
         }
         setLoading(false);
@@ -228,7 +228,7 @@ export function QuizPage() {
                   </div>
 
                   <h3 className="mb-3 text-lg font-bold text-gray-900">
-                    {renderMath(question.question.text)}
+                    {renderMath(question.question)}
                   </h3>
 
                   {!userAnswer?.isCorrect && (
