@@ -7,7 +7,7 @@ type UserRole = "parent" | "child" | "mentor" | null;
 
 export function InitUserPage() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [selectedRole, setSelectedRole] = useState<UserRole>(null);
   // get Profile api 호출해야함.
 

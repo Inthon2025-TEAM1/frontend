@@ -1,13 +1,9 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
 import { authFetch, postWithAuth } from "../api/auth";
 import { useAuth } from "../contexts/AuthContext";
-
-const imgIcon2 = "/images/profile-icon.png";
-const imgIcon3 = "/images/candy-icon.png";
-const imgIcon4 = "/images/logout-icon.png";
 
 export interface Question {
   grade?: number;

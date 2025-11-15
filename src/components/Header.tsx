@@ -1,15 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { logout } from "../services/authService";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect } from "react";
 import { authFetch } from "../api/auth";
 
 export function Header() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-
-  const [role, setRole] = useState<string | null>(null);
   useEffect(() => {
     const getRole = async () => {
       console.log('aslfkjl')

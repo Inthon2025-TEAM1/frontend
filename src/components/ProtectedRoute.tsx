@@ -2,6 +2,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { authFetch } from "../api/auth";
 import { useEffect, useState } from "react";
+import { FloatingRoleButton } from "./FloatingRoleButton";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -79,5 +80,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   // Render protected content if authenticated and has role
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <FloatingRoleButton />
+    </>
+  );
 }
