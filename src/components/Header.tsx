@@ -21,6 +21,9 @@ export function Header() {
             <a href="#support" className="text-gray-700 hover:text-indigo-600 font-medium">
               지원
             </a>
+            <Link to="/rewards" className="text-gray-700 hover:text-indigo-600 font-medium">
+              보상
+            </Link>
           </div>
 
           {/* Auth Buttons */}
