@@ -1,4 +1,4 @@
-const imgIcon3 = "http://localhost:3845/assets/25bc3fc562f7532fd991cd4d2a42c418bf19c020.svg";
+const imgIcon3 = "/images/gacha-button-icon.png";
 
 interface CharacterGachaBannerProps {
   onNavigate?: () => void;

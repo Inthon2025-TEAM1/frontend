@@ -1,9 +1,9 @@
 import { useAuth } from "../../hooks/useAuth";
 
-// Figma에서 제공된 이미지 URL
-const imgIcon = "http://localhost:3845/assets/afffd6d8d3463b10dada717ae3c8ba49ca71fad1.svg";
-const imgIcon1 = "http://localhost:3845/assets/83dc8ac03698d5fd8b150f9a7ebd7c70739a642e.svg";
-const imgIcon2 = "http://localhost:3845/assets/4738b081536335432d66c20a9bf5ee36e804b886.svg";
+// 이미지 경로
+const imgIcon = "/images/profile-icon.png";
+const imgIcon1 = "/images/candy-icon.png";
+const imgIcon2 = "/images/logout-icon.png";
 
 interface ProfileHeaderProps {
   candyCount?: number;

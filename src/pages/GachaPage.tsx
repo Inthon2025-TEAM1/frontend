@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
-// Figma에서 제공된 이미지 URL
-const imgImageWithFallback = "http://localhost:3845/assets/bb7b882aea0095e3ef46cca908b66883d38700a2.png";
-const imgIcon = "http://localhost:3845/assets/86ba255154754bc063948b9c194a8d76c9a62ed0.svg";
-const imgIcon1 = "http://localhost:3845/assets/afffd6d8d3463b10dada717ae3c8ba49ca71fad1.svg";
-const imgIcon2 = "http://localhost:3845/assets/ee283d5b03be87674b99fda814276c0f32a6b60c.svg";
-const imgIcon3 = "http://localhost:3845/assets/fde13eaf788be23e82c4fede7454f58cdfb513d7.svg";
+// 이미지 경로
+const imgImageWithFallback = "/images/gacha-display.png";
+const imgIcon = "/images/back-arrow-icon.png";
+const imgIcon1 = "/images/profile-icon.png";
+const imgIcon2 = "/images/candy-icon.png";
+const imgIcon3 = "/images/sparkle-icon.png";
 
 export function GachaPage() {
   const navigate = useNavigate();

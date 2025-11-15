@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
-// Figma에서 제공된 이미지 URL
-const imgIcon = "http://localhost:3845/assets/a26bee7ad9f55b044f1ef593f19afbb6d115f4e3.svg";
-const imgIcon1 = "http://localhost:3845/assets/1def94d445af8f367ee18de64886d64ad27ce407.svg";
-const imgIcon2 = "http://localhost:3845/assets/07b2e83deaa566c3f56f397f5240b6c8dad02c41.svg";
-const imgIcon3 = "http://localhost:3845/assets/6c757a4989e83166651e2fc4fb3d37340bb8c810.svg";
-const imgIcon4 = "http://localhost:3845/assets/c809847a16546fd91d86cc7b5c792a709c31569b.svg";
+// 이미지 경로
+const imgIcon = "/images/quiz-progress-active.png";
+const imgIcon1 = "/images/quiz-progress-inactive.png";
+const imgIcon2 = "/images/profile-icon.png";
+const imgIcon3 = "/images/candy-icon.png";
+const imgIcon4 = "/images/logout-icon.png";
 
 export function QuizPage() {
   const location = useLocation();
