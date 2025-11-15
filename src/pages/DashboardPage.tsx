@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { ProfileHeader } from "../components/dashboard/ProfileHeader";
+// import { ProfileHeader } from "../components/dashboard/ProfileHeader";
 import { CharacterGachaBanner } from "../components/dashboard/CharacterGachaBanner";
 import { QuizCategoryCard } from "../components/dashboard/QuizCategoryCard";
 import { authFetch } from "../api/auth";
@@ -27,9 +27,9 @@ interface QuizCategory {
 
 export function DashboardPage() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [selectedGrade, setSelectedGrade] = useState<string>("전체");
-  const [chapters, setChapters] = useState<Array<Chapter>>([])
+  const [_chapters, setChapters] = useState<Array<Chapter>>([])
   const [quizCategories, setQuizCategories] = useState<Array<QuizCategory>>([])
   const [isLoading, setIsLoading] = useState(false);
 
@@ -166,14 +166,14 @@ export function DashboardPage() {
 
     fetchData();
   }, [selectedGrade])
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     await logout();
+  //     navigate("/login");
+  //   } catch (error) {
+  //     console.error("Logout failed:", error);
+  //   }
+  // };
 
   const handleGachaNavigate = () => {
     navigate("/gacha");

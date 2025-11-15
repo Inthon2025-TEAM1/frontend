@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { postWithAuth } from "../api/auth";
-import { useAuth } from "../hooks/useAuth";
+// import { useAuth } from "../hooks/useAuth";
 
 type UserRole = "parent" | "child" | "mentor" | null;
 
@@ -12,12 +12,12 @@ const signIcon = "/images/sign-icon.png";
 
 export function InitUserPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [selectedRole, setSelectedRole] = useState<UserRole>(null);
+  // const { user } = useAuth();
+  // const [selectedRole, setSelectedRole] = useState<UserRole>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const handleRoleSelect = (role: UserRole) => {
-    setSelectedRole(role);
+  const handleRoleSelect = (_role: UserRole) => {
+    // setSelectedRole(role);
   };
 
   const handleRoleSubmit = async (role: UserRole) => {
