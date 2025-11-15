@@ -1,15 +1,65 @@
 import { useState } from "react";
+import { createPayment } from "../../api/auth";
+import { useAuth } from "../../hooks/useAuth";
 
 export function ParentPaymentPage() {
+  const { user } = useAuth();
   const [childrenCount, setChildrenCount] = useState(2);
+  const [depositorName, setDepositorName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const pricePerChild = 9900; // 자녀 1명당 월 9,900원
   const totalPrice = childrenCount * pricePerChild;
 
-  const handlePayment = () => {
-    // TODO: 실제 결제 API 연동
-    alert(
-      `${childrenCount}명 × ${pricePerChild.toLocaleString()}원 = ${totalPrice.toLocaleString()}원\n결제가 진행됩니다.`
-    );
+  const handlePayment = async () => {
+    if (!depositorName.trim()) {
+      setError("입금자명을 입력해주세요.");
+      return;
+    }
+
+    if (!user) {
+      setError("로그인이 필요합니다.");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // 결제 시작일과 종료일 계산 (현재부터 1개월)
+      const startAt = new Date();
+      const endAt = new Date();
+      endAt.setMonth(endAt.getMonth() + 1);
+
+      const payment = await createPayment({
+        amount: totalPrice,
+        depositorName: depositorName.trim(),
+        startAt,
+        endAt,
+      });
+
+      alert(
+        `결제가 성공적으로 접수되었습니다!\n\n` +
+          `결제 ID: ${payment.id}\n` +
+          `금액: ${payment.amount.toLocaleString()}원\n` +
+          `입금자명: ${payment.depositorName}\n` +
+          `상태: ${payment.status}\n\n` +
+          `입금 확인 후 서비스가 활성화됩니다.`
+      );
+
+      // 입금자명 초기화
+      setDepositorName("");
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "결제 처리 중 오류가 발생했습니다.";
+      setError(errorMessage);
+      alert(`결제 실패: ${errorMessage}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -20,9 +70,7 @@ export function ParentPaymentPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             서비스 이용료 결제
           </h1>
-          <p className="text-lg text-gray-600">
-            자녀별 월 구독료를 결제하세요
-          </p>
+          <p className="text-lg text-gray-600">자녀별 월 구독료를 결제하세요</p>
         </div>
 
         {/* 요금제 안내 */}
@@ -40,7 +88,6 @@ export function ParentPaymentPage() {
                   {pricePerChild.toLocaleString()}원
                 </p>
               </div>
-              <div className="text-6xl">👨‍👩‍👧‍👦</div>
             </div>
           </div>
 
@@ -103,39 +150,89 @@ export function ParentPaymentPage() {
           </div>
         </div>
 
+        {/* 입금자명 입력 */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">입금자 정보</h3>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              입금자명 <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={depositorName}
+              onChange={(e) => setDepositorName(e.target.value)}
+              placeholder="입금자명을 입력하세요"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
+              disabled={isLoading}
+            />
+            <p className="mt-2 text-sm text-gray-500">
+              입금 확인을 위해 실제 입금하실 분의 성함을 정확히 입력해주세요.
+            </p>
+          </div>
+        </div>
+
         {/* 결제 수단 선택 */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
           <h3 className="text-xl font-bold text-gray-900 mb-4">결제 수단</h3>
           <div className="space-y-3">
+            <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg opacity-50 cursor-not-allowed">
+              <input type="radio" name="payment" className="w-5 h-5" disabled />
+              <span className="text-2xl">💳</span>
+              <div className="flex-1">
+                <span className="font-medium">신용카드</span>
+                <span className="ml-2 text-sm text-orange-600 font-semibold">
+                  (출시 준비중)
+                </span>
+              </div>
+            </label>
             <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-indigo-500 cursor-pointer transition-colors">
               <input
                 type="radio"
                 name="payment"
                 defaultChecked
                 className="w-5 h-5"
+                disabled={isLoading}
               />
-              <span className="text-2xl">💳</span>
-              <span className="font-medium">신용카드</span>
-            </label>
-            <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-indigo-500 cursor-pointer transition-colors">
-              <input type="radio" name="payment" className="w-5 h-5" />
               <span className="text-2xl">🏦</span>
               <span className="font-medium">계좌이체</span>
             </label>
-            <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-indigo-500 cursor-pointer transition-colors">
-              <input type="radio" name="payment" className="w-5 h-5" />
+            <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg opacity-50 cursor-not-allowed">
+              <input type="radio" name="payment" className="w-5 h-5" disabled />
               <span className="text-2xl">📱</span>
-              <span className="font-medium">간편결제 (카카오페이, 네이버페이)</span>
+              <div className="flex-1">
+                <span className="font-medium">
+                  간편결제 (카카오페이, 네이버페이)
+                </span>
+                <span className="ml-2 text-sm text-orange-600 font-semibold">
+                  (출시 준비중)
+                </span>
+              </div>
             </label>
           </div>
         </div>
 
+        {/* 에러 메시지 */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+            <p className="text-sm text-red-700">
+              <span className="font-semibold">⚠️ 오류:</span> {error}
+            </p>
+          </div>
+        )}
+
         {/* 결제 버튼 */}
         <button
           onClick={handlePayment}
-          className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold text-xl hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl"
+          disabled={isLoading || !depositorName.trim()}
+          className={`w-full py-4 rounded-xl font-bold text-xl transition-all shadow-lg ${
+            isLoading || !depositorName.trim()
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 hover:shadow-xl"
+          }`}
         >
-          {totalPrice.toLocaleString()}원 결제하기
+          {isLoading
+            ? "처리 중..."
+            : `${totalPrice.toLocaleString()}원 결제하기`}
         </button>
 
         {/* 안내 문구 */}

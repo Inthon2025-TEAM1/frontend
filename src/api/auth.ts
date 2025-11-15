@@ -180,3 +180,44 @@ export async function removeChild(
   });
   return await response.json();
 }
+
+/**
+ * Payment APIs
+ */
+
+export interface CreatePaymentRequest {
+  amount: number;
+  depositorName: string;
+  startAt?: Date;
+  endAt?: Date;
+}
+
+export interface PaymentResponse {
+  id: number;
+  parentId: number;
+  amount: number;
+  depositorName: string;
+  status: "pending" | "paid" | "active" | "expired";
+  startAt: Date | null;
+  endAt: Date | null;
+  paidAt: Date | null;
+}
+
+/**
+ * Create a new payment
+ */
+export async function createPayment(
+  payment: CreatePaymentRequest
+): Promise<PaymentResponse> {
+  const response = await authFetch("/api/payment/create", {
+    method: "POST",
+    body: JSON.stringify({ payment }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "결제 생성에 실패했습니다.");
+  }
+
+  return await response.json();
+}
