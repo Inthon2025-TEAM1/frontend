@@ -4,7 +4,7 @@ import { authFetch } from "../api/auth";
 import { getMockRewards } from "../mocks/rewardsMock";
 
 // Mock mode toggle - set to false when backend API is ready
-const USE_MOCK_DATA = true;
+const USE_MOCK_DATA = false;
 
 interface QuizAttempt {
   id: string;
@@ -91,7 +91,7 @@ export function RewardsPage() {
   return (
     <div className="bg-white box-border flex flex-col gap-8 items-start pb-[400px] pt-8 px-8 relative min-h-[calc(100vh+400px)] w-full">
       {/* Header */}
-      <div className="flex justify-between items-center w-full">
+      <div className="flex items-center justify-between w-full">
         <div className="flex flex-col gap-2">
           <h1 className="font-bold leading-[57.6px] text-[#101828] text-5xl">
             보상 내역
@@ -103,50 +103,50 @@ export function RewardsPage() {
 
         <button
           onClick={() => navigate("/dashboard")}
-          className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+          className="px-6 py-2 font-medium text-gray-700 transition-colors bg-gray-100 rounded-lg hover:bg-gray-200"
         >
           문제 풀러 가기
         </button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 shadow-sm border border-purple-200">
+      <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="p-6 border border-purple-200 shadow-sm bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl">
           <div className="flex flex-col gap-2">
-            <p className="text-purple-600 font-medium text-sm">이번 달 풀이 수</p>
+            <p className="text-sm font-medium text-purple-600">이번 달 풀이 수</p>
             <p className="text-4xl font-bold text-purple-900">
               {monthlyStats.totalSolved}
-              <span className="text-xl ml-2">문제</span>
+              <span className="ml-2 text-xl">문제</span>
             </p>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 shadow-sm border border-green-200">
+        <div className="p-6 border border-green-200 shadow-sm bg-gradient-to-br from-green-50 to-green-100 rounded-2xl">
           <div className="flex flex-col gap-2">
-            <p className="text-green-600 font-medium text-sm">이번 달 보상</p>
+            <p className="text-sm font-medium text-green-600">이번 달 보상</p>
             <p className="text-4xl font-bold text-green-900">
               {monthlyStats.totalRewards}
-              <span className="text-xl ml-2">🍬</span>
+              <span className="ml-2 text-xl">🍬</span>
             </p>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 shadow-sm border border-blue-200">
+        <div className="p-6 border border-blue-200 shadow-sm bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl">
           <div className="flex flex-col gap-2">
-            <p className="text-blue-600 font-medium text-sm">정답률</p>
+            <p className="text-sm font-medium text-blue-600">정답률</p>
             <p className="text-4xl font-bold text-blue-900">
               {monthlyStats.correctRate.toFixed(1)}
-              <span className="text-xl ml-2">%</span>
+              <span className="ml-2 text-xl">%</span>
             </p>
           </div>
         </div>
       </div>
 
       {/* Month Filter */}
-      <div className="flex items-center gap-4 w-full">
+      <div className="flex items-center w-full gap-4">
         <label
           htmlFor="month-select"
-          className="font-medium text-gray-700 text-lg"
+          className="text-lg font-medium text-gray-700"
         >
           기간 선택
         </label>
@@ -154,7 +154,7 @@ export function RewardsPage() {
           id="month-select"
           value={selectedMonth}
           onChange={handleMonthChange}
-          className="px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="px-4 py-2 font-medium text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
           {getMonthOptions().map((option) => (
             <option key={option.value} value={option.value}>
@@ -165,7 +165,7 @@ export function RewardsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 w-full border-b border-gray-200">
+      <div className="flex w-full gap-2 border-b border-gray-200">
         <button
           onClick={() => setActiveTab('rewards')}
           className={`px-6 py-3 font-semibold text-lg transition-colors relative ${
@@ -196,21 +196,21 @@ export function RewardsPage() {
 
       {/* Quiz Attempts History */}
       {activeTab === 'quiz' && (
-        <div className="flex flex-col gap-4 w-full">
-          <h2 className="font-bold text-2xl text-gray-900">풀이 내역</h2>
+        <div className="flex flex-col w-full gap-4">
+          <h2 className="text-2xl font-bold text-gray-900">풀이 내역</h2>
 
         {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <div className="flex items-center justify-center py-12">
+            <div className="w-12 h-12 border-b-2 border-indigo-600 rounded-full animate-spin"></div>
           </div>
         ) : attempts.length === 0 ? (
-          <div className="bg-gray-50 rounded-xl p-12 text-center">
-            <p className="text-gray-500 text-lg">
+          <div className="p-12 text-center bg-gray-50 rounded-xl">
+            <p className="text-lg text-gray-500">
               이 기간에 풀이한 문제가 없습니다
             </p>
             <button
               onClick={() => navigate("/dashboard")}
-              className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors"
+              className="px-6 py-2 mt-4 font-medium text-white transition-colors bg-indigo-600 rounded-lg hover:bg-indigo-700"
             >
               문제 풀러 가기
             </button>
@@ -226,8 +226,8 @@ export function RewardsPage() {
                     : "border-red-200 hover:border-red-300"
                 }`}
               >
-                <div className="flex justify-between items-start">
-                  <div className="flex flex-col gap-2 flex-1">
+                <div className="flex items-start justify-between">
+                  <div className="flex flex-col flex-1 gap-2">
                     <div className="flex items-center gap-3">
                       <span
                         className={`px-3 py-1 rounded-full text-sm font-semibold ${
@@ -238,7 +238,7 @@ export function RewardsPage() {
                       >
                         {attempt.isCorrect ? "정답 ✓" : "오답 ✗"}
                       </span>
-                      <span className="text-gray-500 text-sm">
+                      <span className="text-sm text-gray-500">
                         {new Date(attempt.createdAt).toLocaleDateString("ko-KR", {
                           year: "numeric",
                           month: "long",
@@ -248,7 +248,7 @@ export function RewardsPage() {
                         })}
                       </span>
                     </div>
-                    <h3 className="font-semibold text-lg text-gray-900">
+                    <h3 className="text-lg font-semibold text-gray-900">
                       {attempt.questionTitle}
                     </h3>
                     <p className="text-gray-600">
@@ -257,9 +257,9 @@ export function RewardsPage() {
                   </div>
 
                   <div className="flex flex-col items-end gap-1">
-                    <div className="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-lg border border-yellow-200">
+                    <div className="flex items-center gap-2 px-4 py-2 border border-yellow-200 rounded-lg bg-yellow-50">
                       <span className="text-2xl">🍬</span>
-                      <span className="font-bold text-xl text-yellow-700">
+                      <span className="text-xl font-bold text-yellow-700">
                         +{attempt.rewardCandy}
                       </span>
                     </div>
@@ -274,21 +274,21 @@ export function RewardsPage() {
 
       {/* Rewards History (Candy-focused view) */}
       {activeTab === 'rewards' && (
-        <div className="flex flex-col gap-4 w-full">
-          <h2 className="font-bold text-2xl text-gray-900">보상 내역</h2>
+        <div className="flex flex-col w-full gap-4">
+          <h2 className="text-2xl font-bold text-gray-900">보상 내역</h2>
 
           {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <div className="flex items-center justify-center py-12">
+              <div className="w-12 h-12 border-b-2 border-indigo-600 rounded-full animate-spin"></div>
             </div>
           ) : attempts.length === 0 ? (
-            <div className="bg-gray-50 rounded-xl p-12 text-center">
-              <p className="text-gray-500 text-lg">
+            <div className="p-12 text-center bg-gray-50 rounded-xl">
+              <p className="text-lg text-gray-500">
                 이 기간에 받은 보상이 없습니다
               </p>
               <button
                 onClick={() => navigate("/dashboard")}
-                className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors"
+                className="px-6 py-2 mt-4 font-medium text-white transition-colors bg-indigo-600 rounded-lg hover:bg-indigo-700"
               >
                 문제 풀러 가기
               </button>
@@ -320,22 +320,22 @@ export function RewardsPage() {
                   return (
                     <div
                       key={date}
-                      className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all"
+                      className="p-6 transition-all bg-white border border-gray-200 shadow-sm rounded-xl hover:shadow-md"
                     >
-                      <div className="flex justify-between items-center">
+                      <div className="flex items-center justify-between">
                         {/* Left: Date and problem count */}
                         <div className="flex flex-col gap-1">
-                          <h3 className="font-bold text-lg text-gray-900">{date}</h3>
-                          <p className="text-gray-500 text-sm">
+                          <h3 className="text-lg font-bold text-gray-900">{date}</h3>
+                          <p className="text-sm text-gray-500">
                             {problemCount}개 문제 풀이
                           </p>
                         </div>
 
                         {/* Right: Total candy earned */}
-                        <div className="flex items-center gap-3 bg-gradient-to-r from-yellow-50 to-orange-50 px-6 py-3 rounded-xl border border-yellow-200">
+                        <div className="flex items-center gap-3 px-6 py-3 border border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl">
                           <span className="text-3xl">🍬</span>
                           <div className="flex flex-col items-end">
-                            <span className="font-bold text-2xl text-yellow-700">
+                            <span className="text-2xl font-bold text-yellow-700">
                               +{totalCandyForDay}
                             </span>
                             <span className="text-xs text-yellow-600">캔디</span>
@@ -344,14 +344,14 @@ export function RewardsPage() {
                       </div>
 
                       {/* Problem details (collapsed) */}
-                      <div className="mt-4 pt-4 border-t border-gray-100">
+                      <div className="pt-4 mt-4 border-t border-gray-100">
                         <div className="grid grid-cols-1 gap-2">
                           {dateAttempts.map((attempt) => (
                             <div
                               key={attempt.id}
-                              className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg"
+                              className="flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50"
                             >
-                              <div className="flex items-center gap-3 flex-1">
+                              <div className="flex items-center flex-1 gap-3">
                                 <span
                                   className={`w-2 h-2 rounded-full ${
                                     attempt.isCorrect ? "bg-green-500" : "bg-red-500"
@@ -361,7 +361,7 @@ export function RewardsPage() {
                                   {attempt.questionTitle}
                                 </span>
                               </div>
-                              <span className="text-sm font-semibold text-yellow-600 ml-2">
+                              <span className="ml-2 text-sm font-semibold text-yellow-600">
                                 +{attempt.rewardCandy} 🍬
                               </span>
                             </div>

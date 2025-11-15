@@ -54,7 +54,8 @@ export function DashboardPage() {
             method: "GET",
           });
           const data = await res.json();
-          setChapters(data.data || []);
+          console.log(data, 'data')
+          setChapters(data || []);
         }
       } catch (error) {
         console.error("Failed to fetch chapters:", error);
@@ -145,8 +146,8 @@ export function DashboardPage() {
       <CharacterGachaBanner onNavigate={handleGachaNavigate} />
 
       {/* Learning Categories */}
-      <div className="flex flex-col gap-6 items-start relative shrink-0 w-full">
-        <div className="flex flex-col gap-2 items-start relative shrink-0 w-full">
+      <div className="relative flex flex-col items-start w-full gap-6 shrink-0">
+        <div className="relative flex flex-col items-start w-full gap-2 shrink-0">
           <div className="h-[57.594px] relative shrink-0 w-full">
             <p className="font-bold leading-[57.6px] text-[#101828] text-5xl whitespace-pre">
               학습 카테고리
@@ -167,7 +168,7 @@ export function DashboardPage() {
                 <option value="2학년">2학년</option>
                 <option value="3학년">3학년</option>
               </select>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+              <div className="absolute -translate-y-1/2 pointer-events-none right-2 top-1/2">
                 <svg
                   className="w-4 h-4 text-[#475467]"
                   fill="none"
@@ -185,13 +186,13 @@ export function DashboardPage() {
             </div>
           </div>
         </div>
-        <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-auto relative shrink-0 w-full">
+        <div className="relative grid w-full h-auto grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 shrink-0">
           {isLoading ? (
-            <div className="col-span-full flex items-center justify-center py-12">
+            <div className="flex items-center justify-center py-12 col-span-full">
               <p className="text-[#475467] text-lg">로딩 중...</p>
             </div>
           ) : quizCategories.length === 0 ? (
-            <div className="col-span-full flex items-center justify-center py-12">
+            <div className="flex items-center justify-center py-12 col-span-full">
               <p className="text-[#475467] text-lg">챕터가 없습니다.</p>
             </div>
           ) : (
