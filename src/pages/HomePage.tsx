@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 export function HomePage() {
+  const {user} = useAuth()
   return (
     <div className="min-h-screen bg-linear-to-b from-white to-gray-50">
       {/* Header Navigation */}
@@ -15,12 +17,21 @@ export function HomePage() {
           초등학생부터 학부모까지 함께하는 게이미피케이션 학습 플랫폼입니다.
         </p>
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+          {user ? (
+          <Link
+            to="/dashboard"
+            className="px-8 py-4 text-lg font-semibold text-white transition-colors bg-indigo-600 rounded-full shadow-lg hover:bg-indigo-700"
+          >
+            바로 시작하기
+          </Link>
+          ):(
           <Link
             to="/register"
             className="px-8 py-4 text-lg font-semibold text-white transition-colors bg-indigo-600 rounded-full shadow-lg hover:bg-indigo-700"
           >
             무료 회원 가입
           </Link>
+          )}
         </div>
       </section>
 
@@ -123,12 +134,21 @@ export function HomePage() {
           <p className="mb-8 text-xl text-indigo-100">
             무료로 가입하고 재미있는 학습을 경험해보세요.
           </p>
+          {user ? (
+          <Link
+            to="/dashboard"
+            className="px-8 py-4 text-lg font-semibold text-white transition-colors bg-indigo-600 rounded-full shadow-lg hover:bg-indigo-700"
+          >
+            바로 시작하기
+          </Link>
+          ):(
           <Link
             to="/register"
-            className="inline-block px-8 py-4 text-lg font-semibold text-indigo-600 transition-colors bg-white rounded-full shadow-lg hover:bg-gray-100"
+            className="px-8 py-4 text-lg font-semibold text-white transition-colors bg-indigo-600 rounded-full shadow-lg hover:bg-indigo-700"
           >
-            무료로 시작하기
+            무료 회원 가입
           </Link>
+          )}
         </div>
       </section>
 
@@ -142,7 +162,66 @@ export function HomePage() {
                 게이미피케이션으로 더 재미있는 학습을 만듭니다.
               </p>
             </div>
-            
+            <div>
+              <h4 className="mb-4 font-semibold text-white">서비스</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="#" className="hover:text-white">
+                    문제 풀이
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white">
+                    보상 시스템
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white">
+                    학습 진도
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="mb-4 font-semibold text-white">지원</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="#" className="hover:text-white">
+                    고객센터
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white">
+                    자주 묻는 질문
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white">
+                    문의하기
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="mb-4 font-semibold text-white">회사</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="#" className="hover:text-white">
+                    소개
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white">
+                    이용약관
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white">
+                    개인정보처리방침
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
           <div className="pt-8 mt-8 text-sm text-center border-t border-gray-800">
             <p>&copy; 2025 EduPlay. All rights reserved.</p>

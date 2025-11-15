@@ -70,6 +70,9 @@ export async function authFetch(
       window.location.href = "/login";
     }
   }
+  if(response.status === 406){
+    alert("결제 요청이 전송되었습니다.");
+  }
 
   return response;
 }
