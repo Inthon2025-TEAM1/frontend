@@ -27,7 +27,7 @@ interface QuizCategory {
 
 export function DashboardPage() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const [selectedGrade, setSelectedGrade] = useState<string>("전체");
   const [chapters, setChapters] = useState<Array<Chapter>>([])
   const [quizCategories, setQuizCategories] = useState<Array<QuizCategory>>([])
@@ -114,26 +114,46 @@ export function DashboardPage() {
 
         setChapters(fetchedChapters);
 
-        // 각 챕터에 대해 퀴즈 API 호출
         const categoryPromises = fetchedChapters.map(async (chapter, index) => {
           const response = await authFetch(`/api/quiz?chapterId=${chapter.id}`, {
             method: "GET",
           });
+
+          // ❗ URL 여기 ? ? 로 두 번 쓰면 안 됨
+          const statusRes = await authFetch(
+            `/api/quiz/status?userId=${user?.uid}&chapterId=${chapter.id}`
+          );
+
           const data = await response.json();
+          const statusJson = await statusRes.json();
+
+          const isComplete = statusJson?.isCompleted; // 실제 응답 구조에 맞게 수정
+          console.log('statusRes',isComplete, data)
+
+          // 완료된 챕터면 null 반환해서 나중에 걸러냄
+          if (isComplete) return null;
 
           return {
             id: chapter.id,
             title: chapter.chapterName,
-            description: chapter.chapterDescription || `${chapter.chapterName}의 개념을 이해하고 다양한 문제를 풀어보세요.`,
+            description:
+              chapter.chapterDescription ||
+              `${chapter.chapterName}의 개념을 이해하고 다양한 문제를 풀어보세요.`,
             difficulty: getDifficulty(chapter.chapterOrder),
             problemCount: Array.isArray(data) ? data.length : 10,
             color: colors[index % colors.length],
             grade: getGradeDisplay(chapter.gradeLevel),
-          };
+          } satisfies QuizCategory;
         });
 
+
+      const categoryResults = await Promise.all(categoryPromises);
+
+      // 👇 null 제거 + 타입 좁히기
+      const categories: QuizCategory[] = categoryResults.filter(
+        (item): item is QuizCategory => item !== null
+      );
         // 모든 API 호출이 완료될 때까지 기다림
-        const categories = await Promise.all(categoryPromises);
         setQuizCategories(categories);
       } catch (error) {
         console.error("Failed to fetch chapters:", error);
