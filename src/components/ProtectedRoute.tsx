@@ -74,9 +74,9 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     return <Navigate to="/login" replace />;
   }
   // Redirect to initUser if no role set
-  // if (hasRole === false) {
-  //   return <Navigate to="/initUser" replace />;
-  // }
+  if (hasRole === false) {
+    return <Navigate to="/initUser" replace />;
+  }
 
   // Render protected content if authenticated and has role
   return <>{children}</>;

@@ -11,14 +11,6 @@ export function InitUserPage() {
   const [selectedRole, setSelectedRole] = useState<UserRole>(null);
   // get Profile api 호출해야함.
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
 
   const handleRoleSelect = (role: UserRole) => {
     setSelectedRole(role);
@@ -55,7 +47,6 @@ export function InitUserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <button onClick={handleLogout}>logout</button>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white rounded-lg shadow p-6 space-y-6">
