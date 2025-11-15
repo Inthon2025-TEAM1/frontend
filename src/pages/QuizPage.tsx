@@ -10,15 +10,30 @@ const imgIcon3 = "/images/candy-icon.png";
 const imgIcon4 = "/images/logout-icon.png";
 
 export interface Question {
-  grade: number;
-  type: "객관식";
-  chapterId: number;
+  grade?: number;
+  type?: "객관식";
+  chapterId?: number;
   question: {
     text: string;
   };
   choices: string[];
   answer: string;
   explain: string;
+}
+
+interface ApiQuestion {
+  id: string;
+  question: string;
+  answer: string;
+  explanation: string;
+  difficulty: string;
+  choices: string[];
+}
+
+interface ApiQuizData {
+  quizId: string;
+  title: string;
+  questions: ApiQuestion[];
 }
 
 interface QuizData {
@@ -104,7 +119,7 @@ export function QuizPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const chapterId = searchParams.get("chapterId");
+  const chapterId = searchParams.get("chapterId") || 1;
   const chapterName = searchParams.get("chapterName");
   const category = chapterName || "퀴즈";
 
@@ -124,16 +139,55 @@ export function QuizPage() {
 
   useEffect(() => {
     const fetchQuizData = async () => {
-      const getQuizResponse = await authFetch(`/api/quiz?chapterId=${chapterId}`, {
-        method: "GET",
-      });
-      console.log(getQuizResponse, 'quiz response');
-      setQuizData({
-        quizId: "dummy-quiz-id",
-        title: "더미 퀴즈",
-        questions: dummyData
-      });
-      setLoading(false);
+      try {
+        const response = await authFetch(`/api/quiz?chapterId=${chapterId}`, {
+          method: "GET",
+        });
+
+        const apiResponse: ApiQuizData = await response.json();
+        console.log(apiResponse, 'quiz response');
+
+        if (apiResponse && apiResponse.quizId && apiResponse.questions?.length > 0) {
+          // Transform API response to match our Question interface
+          const transformedQuestions: Question[] = apiResponse.questions.map(q => {
+            // Parse the question JSON string
+            let questionText = "";
+            try {
+              const parsedQuestion = JSON.parse(q.question);
+              questionText = parsedQuestion.text;
+            } catch {
+              questionText = q.question;
+            }
+
+            return {
+              question: {
+                text: questionText
+              },
+              choices: q.choices,
+              answer: q.answer,
+              explain: q.explanation
+            };
+          });
+
+          setQuizData({
+            quizId: apiResponse.quizId,
+            title: apiResponse.title,
+            questions: transformedQuestions
+          });
+        } else {
+          // Fallback to dummy data if API response is invalid
+          setQuizData({
+            quizId: "dummy-quiz-id",
+            title: "더미 퀴즈",
+            questions: dummyData
+          });
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch quiz:", error);
+        setError("퀴즈를 불러오는데 실패했습니다.");
+        setLoading(false);
+      }
     };
     fetchQuizData();
   }, [chapterId]);
