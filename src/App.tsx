@@ -12,6 +12,8 @@ import { HomeLayout } from "./pages/HomeLayout";
 import { QuizSelectionPage } from "./pages/QuizSelectionPage";
 import { GachaPage } from "./pages/GachaPage";
 import { QuizPage } from "./pages/QuizPage";
+import { RewardsPage } from "./pages/RewardsPage";
+import { StorePage } from "./pages/StorePage";
 
 function App() {
   return (
@@ -77,6 +79,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <QuizSelectionPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rewards"
+            element={
+              <ProtectedRoute>
+                <RewardsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/store"
+            element={
+              <ProtectedRoute>
+                <StorePage />
               </ProtectedRoute>
             }
           />
