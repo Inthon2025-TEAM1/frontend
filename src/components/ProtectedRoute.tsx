@@ -18,9 +18,11 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const location = useLocation();
   const [roleLoading, setRoleLoading] = useState(true);
   const [hasRole, setHasRole] = useState<boolean | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   // /initUser 페이지는 role 체크를 건너뜁니다
   const isInitUserPage = location.pathname === "/initUser";
+  const isAdminPage = location.pathname.startsWith("/admin");
 
   useEffect(() => {
     const checkRole = async () => {
@@ -50,6 +52,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
         // role이 null이거나 없으면 false
         setHasRole(data.role !== null && data.role !== undefined);
+        setUserRole(data.role);
       } catch (error) {
         console.error("Error checking role:", error);
         setHasRole(false);
@@ -77,6 +80,11 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   // Redirect to initUser if no role set
   if (hasRole === false) {
     return <Navigate to="/initUser" replace />;
+  }
+
+  // Redirect admin users to /admin if they try to access non-admin pages
+  if (userRole === "admin" && !isAdminPage) {
+    return <Navigate to="/admin" replace />;
   }
 
   // Render protected content if authenticated and has role
