@@ -11,7 +11,6 @@ interface ProtectedRouteProps {
  */
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
-  console.log(user, 'user')
 
   // Show loading spinner while checking auth state
   if (loading) {
