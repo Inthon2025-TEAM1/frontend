@@ -13,6 +13,7 @@
     "@rive-app/react-canvas": "^4.24.0",
     "axios": "^1.13.2",
     "firebase": "^12.5.0",
+    "i": "^0.3.7",
     "katex": "^0.16.25",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
