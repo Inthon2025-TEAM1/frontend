@@ -12,17 +12,30 @@ export function Header() {
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-gray-700 hover:text-indigo-600 font-medium">
-              서비스
-            </a>
-            <a href="#testimonials" className="text-gray-700 hover:text-indigo-600 font-medium">
+            <Link
+              to="/dashboard"
+              className="text-gray-700 hover:text-indigo-600 font-medium"
+            >
+              홈
+            </Link>
+            <Link
+              to="#testimonials"
+              className="text-gray-700 hover:text-indigo-600 font-medium"
+            >
               사용자 이야기
-            </a>
-            <a href="#support" className="text-gray-700 hover:text-indigo-600 font-medium">
-              지원
-            </a>
-            <Link to="/rewards" className="text-gray-700 hover:text-indigo-600 font-medium">
-              보상
+            </Link>
+
+            <Link
+              to="/rewards"
+              className="text-gray-700 hover:text-indigo-600 font-medium"
+            >
+              리워드
+            </Link>
+            <Link
+              to="/store"
+              className="text-gray-700 hover:text-indigo-600 font-medium"
+            >
+              상점
             </Link>
           </div>
 
