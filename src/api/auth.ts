@@ -330,3 +330,37 @@ export async function updateMentoringStatus(
 
   return await response.json();
 }
+
+/**
+ * AI Analysis APIs
+ */
+
+export interface Weakness {
+  category: string;
+  chapterId: number;
+  chapterName: string;
+  problemCount: number;
+  accuracyRate: number;
+  commonMistakes: string[];
+  priority: 'high' | 'medium' | 'low';
+}
+
+export interface WeaknessAnalysisResponse {
+  weaknesses: Weakness[];
+  recommendations: string[];
+  overallScore: number;
+  improvementAreas: string[];
+}
+
+export async function getWeaknessAnalysis(): Promise<WeaknessAnalysisResponse> {
+  const response = await authFetch("/api/ai/analyze-weakness", {
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "약점 분석을 불러오는데 실패했습니다.");
+  }
+
+  return await response.json();
+}
