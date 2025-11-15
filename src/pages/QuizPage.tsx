@@ -1,13 +1,9 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
 import { authFetch, postWithAuth } from "../api/auth";
 import { useAuth } from "../contexts/AuthContext";
-
-const imgIcon2 = "/images/profile-icon.png";
-const imgIcon3 = "/images/candy-icon.png";
-const imgIcon4 = "/images/logout-icon.png";
 
 export interface Question {
   grade?: number;
@@ -18,8 +14,9 @@ export interface Question {
   };
   choices: string[];
   answer: string;
-  explain: string;
+  explanation: string;
   id: string;
+  difficulty?: string;
 }
 
 // interface ApiQuestion {
@@ -87,16 +84,12 @@ export function QuizPage() {
           method: "GET",
         });
 
-        const apiResponse: Question[] = await response.json();
+        const apiResponse: { questions: Question[] } = await response.json();
         console.log(apiResponse, 'quiz response');
 
-        if (apiResponse ) {
+        if (apiResponse && apiResponse.questions) {
           // Transform API response to match our Question interface
-
-
-
-          setQuizData(apiResponse);
-        
+          setQuizData(apiResponse.questions);
         }
         setLoading(false);
       } catch (error) {
@@ -250,7 +243,7 @@ export function QuizPage() {
                   <div className="p-4 rounded-lg bg-gray-50">
                     <h4 className="mb-2 font-semibold text-gray-900">📝 해설</h4>
                     <p className="leading-relaxed text-gray-700">
-                      {renderMath(question.explain)}
+                      {renderMath(question.explanation)}
                     </p>
                   </div>
                 </div>
