@@ -32,12 +32,17 @@ export function ParentDashboardPage() {
     if (newChildEmail.trim()) {
       try {
         const newChild = await addChild(newChildEmail);
+        if(children.find((child) => child.id === newChild.id)){
+          alert("이미 추가된 자녀입니다.");
+          return;
+        }
         setChildren([...children, newChild]);
         setNewChildEmail("");
         setShowAddForm(false);
         alert("자녀가 추가되었습니다!");
       } catch (error) {
         console.error("Failed to add child:", error);
+        
         alert("자녀 추가에 실패했습니다. 이메일을 확인해주세요.");
       }
     }
@@ -63,10 +68,10 @@ export function ParentDashboardPage() {
   // };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen p-8 bg-gray-50">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center justify-between mb-8">
           <div>
             <Link to="/" className="flex items-center">
               <h1 className="text-2xl font-bold text-indigo-600">EduPlay</h1>
@@ -78,7 +83,7 @@ export function ParentDashboardPage() {
           <div className="flex gap-3">
             <button
               onClick={() => navigate("/parent/mentoring/apply")}
-              className="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors shadow-md"
+              className="px-6 py-3 font-semibold text-white transition-colors bg-purple-600 rounded-lg shadow-md hover:bg-purple-700"
             >
               ✨ 고려대 정보대 학생 멘토링 신청하기
             </button>
@@ -86,12 +91,12 @@ export function ParentDashboardPage() {
         </div>
 
         {/* 내 자녀 리스트 */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <div className="flex justify-between items-center mb-6">
+        <div className="p-6 mb-6 bg-white shadow-lg rounded-2xl">
+          <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">내 자녀 리스트</h2>
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+              className="px-4 py-2 font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
             >
               ➕ 자녀 추가
             </button>
@@ -101,7 +106,7 @@ export function ParentDashboardPage() {
           {showAddForm && (
             <form
               onSubmit={handleAddChild}
-              className="mb-6 p-4 bg-green-50 rounded-lg border-2 border-green-200"
+              className="p-4 mb-6 border-2 border-green-200 rounded-lg bg-green-50"
             >
               <div className="flex gap-3">
                 <input
@@ -114,14 +119,17 @@ export function ParentDashboardPage() {
                 />
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                  className="px-6 py-2 font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
                 >
                   추가
                 </button>
                 <button
                   type="button"
-                  onClick={() => setShowAddForm(false)}
-                  className="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-400 transition-colors"
+                  onClick={() => {
+                    setShowAddForm(false)
+                    setNewChildEmail("");
+                  }}
+                  className="px-6 py-2 font-medium text-gray-700 transition-colors bg-gray-300 rounded-lg hover:bg-gray-400"
                 >
                   취소
                 </button>
@@ -131,24 +139,24 @@ export function ParentDashboardPage() {
 
           {/* 로딩 상태 */}
           {loading && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">로딩 중...</p>
+            <div className="py-12 text-center">
+              <p className="text-lg text-gray-500">로딩 중...</p>
             </div>
           )}
 
           {/* 자녀 목록 */}
           {!loading && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {children.map((child) => (
                 <div
                   key={child.id}
-                  className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border-2 border-indigo-200 hover:shadow-lg transition-shadow"
+                  className="p-6 transition-shadow border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl hover:shadow-lg"
                 >
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <span className="text-4xl">👦</span>
                       <div>
-                        <h3 className="font-bold text-xl text-gray-900">
+                        <h3 className="text-xl font-bold text-gray-900">
                           {child.name || child.email}
                         </h3>
                         <p className="text-sm text-gray-600">{child.email}</p>
@@ -156,14 +164,14 @@ export function ParentDashboardPage() {
                     </div>
                     <button
                       onClick={() => handleRemoveChild(child.id)}
-                      className="text-red-500 hover:text-red-700 font-bold text-xl"
+                      className="text-xl font-bold text-red-500 hover:text-red-700"
                       title="자녀 제거"
                     >
                       ✕
                     </button>
                   </div>
 
-                  <div className="bg-white rounded-lg p-4 flex items-center gap-3">
+                  <div className="flex items-center gap-3 p-4 bg-white rounded-lg">
                     <span className="text-3xl">🍬</span>
                     <div>
                       <p className="text-sm text-gray-600">획득한 캔디</p>
@@ -178,11 +186,11 @@ export function ParentDashboardPage() {
           )}
 
           {!loading && children.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">
+            <div className="py-12 text-center">
+              <p className="text-lg text-gray-500">
                 아직 등록된 자녀가 없습니다.
               </p>
-              <p className="text-gray-400 text-sm mt-2">
+              <p className="mt-2 text-sm text-gray-400">
                 "자녀 추가" 버튼을 눌러 자녀를 등록해주세요.
               </p>
             </div>
@@ -190,8 +198,8 @@ export function ParentDashboardPage() {
         </div>
 
         {/* 통계 카드 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="p-6 bg-white shadow-lg rounded-2xl">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-4xl">👶</span>
               <h3 className="text-xl font-bold text-gray-900">총 자녀 수</h3>
@@ -201,7 +209,7 @@ export function ParentDashboardPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="p-6 bg-white shadow-lg rounded-2xl">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-4xl">🍬</span>
               <h3 className="text-xl font-bold text-gray-900">총 캔디 획득</h3>
@@ -211,7 +219,7 @@ export function ParentDashboardPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="p-6 bg-white shadow-lg rounded-2xl">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-4xl">📊</span>
               <h3 className="text-xl font-bold text-gray-900">평균 캔디</h3>
@@ -228,17 +236,17 @@ export function ParentDashboardPage() {
         </div>
 
         {/* 학습 리포트 카드 */}
-        <div className="mt-8 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl shadow-lg p-8 text-white">
+        <div className="p-8 mt-8 text-white shadow-lg bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-2xl font-bold mb-2">📊 학습 리포트</h3>
+              <h3 className="mb-2 text-2xl font-bold">📊 학습 리포트</h3>
               <p className="text-purple-100">
                 AI가 분석한 자녀의 학습 현황과 약점을 확인하세요
               </p>
             </div>
             <button
               onClick={() => navigate("/parent/learning-report")}
-              className="px-8 py-4 bg-white text-purple-600 rounded-xl font-bold text-lg hover:bg-purple-50 transition-colors shadow-lg"
+              className="px-8 py-4 text-lg font-bold text-purple-600 transition-colors bg-white shadow-lg rounded-xl hover:bg-purple-50"
             >
               리포트 보기 →
             </button>

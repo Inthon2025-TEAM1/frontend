@@ -64,7 +64,7 @@ export function Header() {
 
           {user ? (
             <>
-              <span className="text-gray-700">안녕하세요, {user.displayName}님</span>
+              <span className="text-gray-700">안녕하세요, {user.displayName || user.email}님</span>
               <button
                 className="font-medium text-gray-700 hover:text-indigo-600"
                 onClick={handleLogout}

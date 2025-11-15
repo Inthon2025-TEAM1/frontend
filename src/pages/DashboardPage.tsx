@@ -28,7 +28,7 @@ export function DashboardPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [selectedGrade, setSelectedGrade] = useState<string>("전체");
-  const [chapters, setChapters] = useState<Array<Chapter>>([])
+  const [_chapters, setChapters] = useState<Array<Chapter>>([])
   const [quizCategories, setQuizCategories] = useState<Array<QuizCategory>>([])
   const [isLoading, setIsLoading] = useState(false);
   const [candyCount, setCandyCount] = useState<number>(0);
@@ -179,6 +179,7 @@ export function DashboardPage() {
 
     fetchData();
   }, [selectedGrade])
+
   const handleLogout = async () => {
     try {
       await logout();
