@@ -173,17 +173,17 @@ export function HomePage() {
               <h4 className="mb-4 font-semibold text-white">안내</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="/about" className="hover:text-white transition-colors">
+                  <a href="/about" className="transition-colors hover:text-white">
                     소개
                   </a>
                 </li>
                 <li>
-                  <a href="/terms" className="hover:text-white transition-colors">
+                  <a href="/terms" className="transition-colors hover:text-white">
                     이용약관
                   </a>
                 </li>
                 <li>
-                  <a href="/privacy" className="hover:text-white transition-colors">
+                  <a href="/privacy" className="transition-colors hover:text-white">
                     개인정보처리방침
                   </a>
                 </li>
@@ -197,7 +197,7 @@ export function HomePage() {
                 제작자: 신준혁, 이현민, 정단우, 최병주
               </p>
               <p className="text-sm text-gray-400">
-                이메일: <a href="mailto:test@naver.com" className="text-indigo-400 hover:text-indigo-300 transition-colors">test@naver.com</a>
+                이메일: <a href="mailto:sjhsjh8520@korea.ac.kr" className="text-indigo-400 transition-colors hover:text-indigo-300">sjhsjh8520@korea.ac.kr</a>
               </p>
             </div>
           </div>
