@@ -138,3 +138,45 @@ export async function getPurchaseHistory(): Promise<
   const response = await authFetch("/api/user/purchase-history");
   return await response.json();
 }
+
+/**
+ * Parent-Child Management APIs
+ */
+
+export interface Child {
+  id: number;
+  email: string;
+  name: string;
+  candy: number;
+}
+
+/**
+ * Get list of children for current parent
+ */
+export async function getChildren(): Promise<Child[]> {
+  const response = await authFetch("/api/user/children");
+  return await response.json();
+}
+
+/**
+ * Add a child to current parent account
+ */
+export async function addChild(childEmail: string): Promise<Child> {
+  const response = await authFetch("/api/user/children", {
+    method: "POST",
+    body: JSON.stringify({ childEmail }),
+  });
+  return await response.json();
+}
+
+/**
+ * Remove a child from current parent account
+ */
+export async function removeChild(
+  childId: number
+): Promise<{ success: boolean; message: string }> {
+  const response = await authFetch(`/api/user/children/${childId}`, {
+    method: "DELETE",
+  });
+  return await response.json();
+}
