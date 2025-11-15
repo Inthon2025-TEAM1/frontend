@@ -43,7 +43,7 @@ export function Header() {
               to="/dashboard"
               className="font-medium text-gray-700 hover:text-indigo-600"
             >
-              홈
+              대시보드
             </Link>
 
 
