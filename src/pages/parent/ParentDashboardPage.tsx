@@ -56,11 +56,11 @@ export function ParentDashboardPage() {
     }
   };
 
-  const handleShareLink = () => {
-    const link = `${window.location.origin}/register`;
-    navigator.clipboard.writeText(link);
-    alert("링크가 클립보드에 복사되었습니다!\n자녀에게 공유해주세요.");
-  };
+  // const handleShareLink = () => {
+  //   const link = `${window.location.origin}/register`;
+  //   navigator.clipboard.writeText(link);
+  //   alert("링크가 클립보드에 복사되었습니다!\n자녀에게 공유해주세요.");
+  // };
 
   return (
     <div className="bg-gray-50 min-h-screen p-8">

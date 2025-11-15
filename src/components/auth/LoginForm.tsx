@@ -22,7 +22,7 @@ export function LoginForm({ onSubmit, disabled }: LoginFormProps) {
     try {
       await onSubmit(email, password);
     } catch (err) {
-      setError(err.message || "로그인에 실패했습니다.");
+      setError(err instanceof Error ? err.message : "로그인에 실패했습니다.");
     }
   };
 

@@ -1,4 +1,3 @@
-import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 interface PublicOnlyRouteProps {
@@ -10,7 +9,7 @@ interface PublicOnlyRouteProps {
  * Redirects authenticated users to dashboard
  */
 export function PublicOnlyRoute({ children }: PublicOnlyRouteProps) {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   // Show loading spinner while checking auth state
   if (loading) {
