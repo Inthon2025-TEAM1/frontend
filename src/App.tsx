@@ -15,6 +15,12 @@ import { QuizPage } from "./pages/QuizPage";
 import GamePage from "./pages/GamePage";
 import { RewardsPage } from "./pages/RewardsPage";
 import { StorePage } from "./pages/StorePage";
+import { ParentLayout } from "./pages/ParentLayout";
+import { ParentDashboardPage } from "./pages/parent/ParentDashboardPage";
+import { ParentPaymentPage } from "./pages/parent/ParentPaymentPage";
+import { ParentMentoringListPage } from "./pages/parent/ParentMentoringListPage";
+import { ParentMentoringApplyPage } from "./pages/parent/ParentMentoringApplyPage";
+import { ParentLearningReportPage } from "./pages/parent/ParentLearninStatusPage";
 
 function App() {
   return (
@@ -22,7 +28,7 @@ function App() {
       <Routes>
         {/* Redirect root to login */}
 
-        <Route path="/" element={<HomeLayout/>}>
+        <Route path="/" element={<HomeLayout />}>
           <Route
             path="/"
             element={
@@ -44,9 +50,9 @@ function App() {
           <Route
             path="/initUser"
             element={
-              <ProtectedRoute>
+              <PublicOnlyRoute>
                 <InitUserPage />
-              </ProtectedRoute>
+              </PublicOnlyRoute>
             }
           />
           {/* Public-only routes (redirect to dashboard if already logged in) */}
@@ -126,6 +132,50 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Parent routes */}
+        <Route path="/parent" element={<ParentLayout />}>
+          <Route
+            path="dashboard"
+            element={
+              <ProtectedRoute>
+                <ParentDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="learning-report"
+            element={
+              <ProtectedRoute>
+                <ParentLearningReportPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="payment"
+            element={
+              <ProtectedRoute>
+                <ParentPaymentPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="mentoring/list"
+            element={
+              <ProtectedRoute>
+                <ParentMentoringListPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="mentoring/apply"
+            element={
+              <ProtectedRoute>
+                <ParentMentoringApplyPage />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
 
         {/* Catch-all route - redirect based on auth state */}
         <Route path="*" element={<HomeRedirect />} />
