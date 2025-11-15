@@ -1,5 +1,5 @@
-const imgVector = "http://localhost:3845/assets/13d09527a1d48f2ef337290b38521f99417879d7.svg";
-const imgVector1 = "http://localhost:3845/assets/695a45260f963e830ff412f562ccd84abb9e864f.svg";
+const imgVector = "/images/book-icon.png";
+const imgVector1 = "/images/book-icon.png";
 
 interface QuizCategoryCardProps {
   title: string;
