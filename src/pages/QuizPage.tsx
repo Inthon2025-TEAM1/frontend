@@ -18,8 +18,9 @@ export interface Question {
   };
   choices: string[];
   answer: string;
-  explain: string;
+  explanation: string;
   id: string;
+  difficulty?: string;
 }
 
 // interface ApiQuestion {
@@ -87,16 +88,12 @@ export function QuizPage() {
           method: "GET",
         });
 
-        const apiResponse: Question[] = await response.json();
+        const apiResponse: { questions: Question[] } = await response.json();
         console.log(apiResponse, 'quiz response');
 
-        if (apiResponse ) {
+        if (apiResponse && apiResponse.questions) {
           // Transform API response to match our Question interface
-
-
-
           setQuizData(apiResponse.questions);
-        
         }
         setLoading(false);
       } catch (error) {
@@ -228,7 +225,7 @@ export function QuizPage() {
                   </div>
 
                   <h3 className="mb-3 text-lg font-bold text-gray-900">
-                    {renderMath(question.question)}
+                    {renderMath(question.question.text)}
                   </h3>
 
                   {!userAnswer?.isCorrect && (
@@ -250,7 +247,7 @@ export function QuizPage() {
                   <div className="p-4 rounded-lg bg-gray-50">
                     <h4 className="mb-2 font-semibold text-gray-900">📝 해설</h4>
                     <p className="leading-relaxed text-gray-700">
-                      {renderMath(question.explain)}
+                      {renderMath(question.explanation)}
                     </p>
                   </div>
                 </div>
