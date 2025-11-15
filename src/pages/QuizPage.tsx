@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
 import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
-import { authFetch } from "../api/auth";
+import { authFetch, postWithAuth } from "../api/auth";
+import { useAuth } from "../contexts/AuthContext";
 
 const imgIcon2 = "/images/profile-icon.png";
 const imgIcon3 = "/images/candy-icon.png";
@@ -19,6 +19,7 @@ export interface Question {
   choices: string[];
   answer: string;
   explain: string;
+  id: string;
 }
 
 // interface ApiQuestion {
@@ -50,7 +51,7 @@ const renderMath = (text: string) => {
 export function QuizPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   // searchParams에서 chapterId 추출 및 파싱
   const chapterIdParam = searchParams.get("chapterId");
@@ -113,20 +114,16 @@ export function QuizPage() {
   const questionText = currentQuestionData?.question?.text || "";
   const choices = currentQuestionData?.choices || [];
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-
   const handleCheckAnswer = () => {
     if (!answer) return;
-
+    // @CurrentUserId() userId: number,
+    // @Body('quizId') quizId: number,
+    // @Body('answer') answer: string,
     const isCorrect = answer === correctAnswer;
-    if(!history[currentQuestion]) setHistory(prev => [...prev, { questionIndex: currentQuestion, selectedAnswer: answer, isCorrect }]);
+    if(!history[currentQuestion]){
+       setHistory(prev => [...prev, { questionIndex: currentQuestion, selectedAnswer: answer, isCorrect }]);
+        postWithAuth("/api/quiz/submit", {quizId: quizData[currentQuestion].id, answer, userId: user?.uid })
+      }
 
     if (isCorrect) {
       // 정답: 초록색 페이드 아웃 애니메이션 후 다음 문제
@@ -144,6 +141,7 @@ export function QuizPage() {
         } else {
           // 마지막 문제 완료
           setShowResults(true);
+
         }
       }, 800);
     } else {
@@ -159,9 +157,9 @@ export function QuizPage() {
 
   if (loading) {
     return (
-      <div className="h-screen bg-white flex items-center justify-center">
+      <div className="flex items-center justify-center h-screen bg-white">
         <div className="text-center">
-          <div className="text-6xl mb-4">📚</div>
+          <div className="mb-4 text-6xl">📚</div>
           <p className="text-xl text-gray-600">퀴즈를 불러오는 중...</p>
         </div>
       </div>
@@ -170,13 +168,13 @@ export function QuizPage() {
 
   if (error) {
     return (
-      <div className="h-screen bg-white flex items-center justify-center">
+      <div className="flex items-center justify-center h-screen bg-white">
         <div className="text-center">
-          <div className="text-6xl mb-4">⚠️</div>
-          <p className="text-xl text-red-600 mb-4">{error}</p>
+          <div className="mb-4 text-6xl">⚠️</div>
+          <p className="mb-4 text-xl text-red-600">{error}</p>
           <button
             onClick={() => navigate("/dashboard")}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            className="px-6 py-3 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
           >
             대시보드로 돌아가기
           </button>
@@ -191,12 +189,12 @@ export function QuizPage() {
     const score = Math.round((correctCount / totalQuestions) * 100);
 
     return (
-      <div className="h-screen overflow-auto bg-linear-to-br from-indigo-50 via-white to-purple-50">
-        <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
+        <div className="max-w-4xl px-4 py-8 mx-auto">
           {/* 결과 헤더 */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-6 text-center">
-            <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">퀴즈 완료!</h2>
+          <div className="p-8 mb-6 text-center bg-white shadow-lg rounded-2xl">
+            <div className="mb-4 text-6xl">🎉</div>
+            <h2 className="mb-4 text-3xl font-bold text-gray-900">퀴즈 완료!</h2>
             <div className="flex items-center justify-center gap-8 mb-6">
               <div>
                 <p className="text-sm text-gray-600">정답</p>
@@ -217,7 +215,7 @@ export function QuizPage() {
             {quizData.map((question, index) => {
               const userAnswer = history.find(a => a.questionIndex === index);
               return (
-                <div key={index} className="bg-white rounded-2xl shadow-md p-6">
+                <div key={index} className="p-6 bg-white shadow-md rounded-2xl">
                   <div className="flex items-start gap-3 mb-4">
                     <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
                       userAnswer?.isCorrect ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
@@ -229,12 +227,12 @@ export function QuizPage() {
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">
+                  <h3 className="mb-3 text-lg font-bold text-gray-900">
                     {renderMath(question.question.text)}
                   </h3>
 
                   {!userAnswer?.isCorrect && (
-                    <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="p-3 mb-3 border border-red-200 rounded-lg bg-red-50">
                       <p className="text-sm text-red-700">
                         <span className="font-semibold">내 답변: </span>
                         {renderMath(userAnswer?.selectedAnswer || "")}
@@ -242,16 +240,16 @@ export function QuizPage() {
                     </div>
                   )}
 
-                  <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="p-3 mb-3 border border-green-200 rounded-lg bg-green-50">
                     <p className="text-sm text-green-700">
                       <span className="font-semibold">정답: </span>
                       {renderMath(question.answer)}
                     </p>
                   </div>
 
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <h4 className="font-semibold text-gray-900 mb-2">📝 해설</h4>
-                    <p className="text-gray-700 leading-relaxed">
+                  <div className="p-4 rounded-lg bg-gray-50">
+                    <h4 className="mb-2 font-semibold text-gray-900">📝 해설</h4>
+                    <p className="leading-relaxed text-gray-700">
                       {renderMath(question.explain)}
                     </p>
                   </div>
@@ -264,7 +262,7 @@ export function QuizPage() {
           <div className="mt-8 text-center">
             <button
               onClick={() => navigate("/dashboard")}
-              className="px-8 py-4 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
+              className="px-8 py-4 text-lg font-semibold text-white transition-all transform shadow-lg bg-linear-to-r from-indigo-600 to-purple-600 rounded-xl hover:shadow-xl hover:scale-105"
             >
               대시보드로 돌아가기
             </button>
@@ -277,21 +275,21 @@ export function QuizPage() {
   const progress = ((currentQuestion + 1) / totalQuestions) * 100;
 
   return (
-    <div className="h-screen overflow-hidden bg-linear-to-br from-indigo-50 via-white to-purple-50 flex flex-col">
-      <div className="flex-1 flex gap-4 p-4 max-h-screen">
+    <div className="flex flex-col h-screen overflow-hidden bg-linear-to-br from-indigo-50 via-white to-purple-50">
+      <div className="flex flex-1 max-h-screen gap-4 p-4">
         {/* 메인 컨텐츠 */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex flex-col flex-1 overflow-hidden">
           {/* 진행도 */}
-          <div className="bg-white rounded-2xl shadow-sm p-4 mb-4">
+          <div className="p-4 mb-4 bg-white shadow-sm rounded-2xl">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-xl font-bold text-gray-900">{category}</h2>
               <span className="text-lg font-semibold text-indigo-600">
                 {currentQuestion + 1} / {totalQuestions}
               </span>
             </div>
-            <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="relative h-2 overflow-hidden bg-gray-200 rounded-full">
               <div
-                className="absolute top-0 left-0 h-full bg-linear-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+                className="absolute top-0 left-0 h-full transition-all duration-500 bg-linear-to-r from-indigo-500 to-purple-500"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -310,13 +308,13 @@ export function QuizPage() {
                 {showWrongMark && <span className="mr-1">✗</span>}
                 문제 {currentQuestion + 1}
               </div>
-              <h3 className="text-xl font-bold text-gray-900 leading-relaxed">
+              <h3 className="text-xl font-bold leading-relaxed text-gray-900">
                 {renderMath(questionText)}
               </h3>
             </div>
 
             {/* 선택지 */}
-            <div className="flex-1 overflow-auto space-y-2">
+            <div className="flex-1 space-y-2 overflow-auto">
               {choices.map((choice, index) => (
                 <button
                   key={index}
@@ -342,11 +340,11 @@ export function QuizPage() {
             </div>
 
             {/* 정답 확인 버튼 */}
-            <div className="mt-4 flex justify-end">
+            <div className="flex justify-end mt-4">
               <button
                 onClick={handleCheckAnswer}
                 disabled={!answer}
-                className="px-8 py-3 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="px-8 py-3 font-semibold text-white transition-all transform shadow-lg bg-linear-to-r from-indigo-600 to-purple-600 rounded-xl hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 정답 확인
               </button>
