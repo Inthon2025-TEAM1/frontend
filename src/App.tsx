@@ -20,7 +20,7 @@ import { ParentDashboardPage } from "./pages/parent/ParentDashboardPage";
 import { ParentPaymentPage } from "./pages/parent/ParentPaymentPage";
 import { ParentMentoringListPage } from "./pages/parent/ParentMentoringListPage";
 import { ParentMentoringApplyPage } from "./pages/parent/ParentMentoringApplyPage";
-import { ParentLearningReportPage } from "./pages/parent/ParentLearninStatusPage";
+import { ParentLearningReportPage } from "./pages/parent/ParentLearningReportPage";
 
 function App() {
   return (
