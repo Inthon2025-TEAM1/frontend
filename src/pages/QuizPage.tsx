@@ -124,10 +124,10 @@ export function QuizPage() {
 
   useEffect(() => {
     const fetchQuizData = async () => {
-      const getQuizResponse = await authFetch(`/api/quiz?chapterId=${chapterId}`, {
+      const getQuizResponse = await authFetch(`/api/quiz/chapters?gradeLevel=1`, {
         method: "GET",
       });
-      console.log(getQuizResponse, 'quiz response');
+      console.log(getQuizResponse.json(), 'quiz response');
       setQuizData({
         quizId: "dummy-quiz-id",
         title: "더미 퀴즈",
