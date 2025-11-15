@@ -32,7 +32,7 @@ export function QuizResultPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const [expandedQuestionId, setExpandedQuestionId] = useState<number | null>(null);
+  const [expandedQuestionIds, setExpandedQuestionIds] = useState<Set<number>>(new Set());
   const displayName = user?.displayName || user?.email?.split("@")[0] || "사용자";
   const candyCount = 43; // TODO: 실제 사탕 개수 가져오기
 
@@ -147,7 +147,15 @@ export function QuizResultPage() {
   };
 
   const toggleQuestion = (questionId: number) => {
-    setExpandedQuestionId(expandedQuestionId === questionId ? null : questionId);
+    setExpandedQuestionIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(questionId)) {
+        newSet.delete(questionId);
+      } else {
+        newSet.add(questionId);
+      }
+      return newSet;
+    });
   };
 
   const handleGoToMain = () => {
@@ -294,7 +302,7 @@ export function QuizResultPage() {
             <h2 className="text-base font-normal leading-6 text-[#101828]">문제별 상세 결과</h2>
             <div className="flex flex-col gap-4">
               {result.questions.map((question) => {
-                const isExpanded = expandedQuestionId === question.id;
+                const isExpanded = expandedQuestionIds.has(question.id);
                 return (
                   <div
                     key={question.id}

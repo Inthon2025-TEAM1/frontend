@@ -85,52 +85,90 @@ export function QuizPage() {
   const handleNextQuestion = () => {
     // 다음 문제로 이동
     console.log("다음 문제");
+    
+    // 현재 문제의 결과를 먼저 계산 (함수형 업데이트 사용)
+    setQuestionResults((prev) => {
+      const currentQuestionData = questions[currentQuestion - 1];
+      const hasCurrentResult = prev.some((r) => r.questionNumber === currentQuestion);
+      
+      let updatedResults = prev;
+      
+      if (!hasCurrentResult) {
+        // 정답 확인을 하지 않고 넘어간 경우
+        const isCorrect = false; // 정답 확인 안 했으면 false로 처리
+        updatedResults = [
+          ...prev,
+          {
+            questionNumber: currentQuestion,
+            isCorrect,
+            difficulty: currentQuestionData.difficulty,
+            question: currentQuestionData.question,
+            userAnswer: answer.trim() || "(미입력)",
+            correctAnswer: correctAnswer,
+            explanation: explanation,
+          },
+        ];
+      }
+      
+      // 마지막 문제인 경우 결과 페이지로 이동
+      if (currentQuestion >= totalQuestions) {
+        // 모든 문제(1~10번)에 대한 결과를 생성
+        const allQuestionsResults = [];
+        for (let i = 1; i <= totalQuestions; i++) {
+          const existingResult = updatedResults.find((r) => r.questionNumber === i);
+          if (existingResult) {
+            allQuestionsResults.push(existingResult);
+          } else {
+            // 결과가 없는 문제는 기본값으로 추가
+            const questionData = questions[i - 1];
+            allQuestionsResults.push({
+              questionNumber: i,
+              isCorrect: false,
+              difficulty: questionData.difficulty,
+              question: questionData.question,
+              userAnswer: "(미입력)",
+              correctAnswer: correctAnswer, // TODO: 각 문제별 정답 가져오기
+              explanation: explanation, // TODO: 각 문제별 해설 가져오기
+            });
+          }
+        }
+        
+        const correctCount = allQuestionsResults.filter((r) => r.isCorrect).length;
+        const accuracyRate = Math.round((correctCount / totalQuestions) * 100);
+        const earnedCandy = correctCount; // TODO: 실제 사탕 계산 로직
+        
+        // 다음 틱에서 navigate 실행
+        setTimeout(() => {
+          navigate("/quiz-result", {
+            state: {
+              result: {
+                accuracyRate,
+                correctCount,
+                totalCount: totalQuestions,
+                earnedCandy,
+                questions: allQuestionsResults.map((r) => ({
+                  id: r.questionNumber,
+                  number: r.questionNumber,
+                  difficulty: r.difficulty,
+                  question: r.question,
+                  isCorrect: r.isCorrect,
+                  userAnswer: r.userAnswer,
+                  correctAnswer: r.correctAnswer,
+                  explanation: r.explanation,
+                })),
+              },
+            },
+          });
+        }, 0);
+      }
+      
+      return updatedResults;
+    });
+    
     if (currentQuestion < totalQuestions) {
       setCurrentQuestion(currentQuestion + 1);
       setAnswer(""); // 답변 초기화
       setShowAnswer(false); // 정답 표시 초기화
-    } else {
-      // 퀴즈 완료 처리 - 결과 페이지로 이동
-      const correctCount = questionResults.filter((r) => r.isCorrect).length;
-      const accuracyRate = Math.round((correctCount / totalQuestions) * 100);
-      const earnedCandy = correctCount; // TODO: 실제 사탕 계산 로직
-      
-      // 모든 문제 결과가 없으면 마지막 문제 결과 추가
-      const finalResults = questionResults.length === totalQuestions 
-        ? questionResults 
-        : [
-            ...questionResults,
-            {
-              questionNumber: currentQuestion,
-              isCorrect: false, // 정답 확인 안 했으면 false로 처리
-              difficulty: questions[currentQuestion - 1].difficulty,
-              question: questions[currentQuestion - 1].question,
-              userAnswer: answer.trim() || "(미입력)",
-              correctAnswer: correctAnswer,
-              explanation: explanation,
-            },
-          ];
-      
-      navigate("/quiz-result", {
-        state: {
-          result: {
-            accuracyRate,
-            correctCount,
-            totalCount: totalQuestions,
-            earnedCandy,
-            questions: finalResults.map((r) => ({
-              id: r.questionNumber,
-              number: r.questionNumber,
-              difficulty: r.difficulty,
-              question: r.question,
-              isCorrect: r.isCorrect,
-              userAnswer: r.userAnswer,
-              correctAnswer: r.correctAnswer,
-              explanation: r.explanation,
-            })),
-          },
-        },
-      });
     }
   };
 
