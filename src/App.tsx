@@ -12,7 +12,6 @@ import { HomePage } from "./pages/HomePage";
 import { InitUserPage } from "./pages/InitalProfilePage";
 import { HomeLayout } from "./pages/HomeLayout";
 import { QuizSelectionPage } from "./pages/QuizSelectionPage";
-import { GachaPage } from "./pages/GachaPage";
 import { QuizPage } from "./pages/QuizPage";
 import GamePage from "./pages/GamePage";
 import { RewardsPage } from "./pages/RewardsPage";
@@ -127,14 +126,6 @@ function App() {
           />
         </Route>
 
-        <Route
-          path="/gacha"
-          element={
-            <ChildRoute>
-              <GachaPage />
-            </ChildRoute>
-          }
-        />
         <Route
           path="/quiz"
           element={

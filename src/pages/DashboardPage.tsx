@@ -1,9 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-// import { ProfileHeader } from "../components/dashboard/ProfileHeader";
-import { CharacterGachaBanner } from "../components/dashboard/CharacterGachaBanner";
 import { QuizCategoryCard } from "../components/dashboard/QuizCategoryCard";
 import { authFetch } from "../api/auth";
 
@@ -166,47 +164,84 @@ export function DashboardPage() {
 
     fetchData();
   }, [selectedGrade])
-  // const handleLogout = async () => {
-  //   try {
-  //     await logout();
-  //     navigate("/login");
-  //   } catch (error) {
-  //     console.error("Logout failed:", error);
-  //   }
-  // };
-
-  const handleGachaNavigate = () => {
-    navigate("/gacha");
-  };
 
   const handleStartQuiz = (chapterId: number, chapterName: string) => {
     navigate(`/quiz?chapterId=${chapterId}&chapterName=${encodeURIComponent(chapterName)}`);
   };
 
   return (
-    <div className="bg-white box-border flex flex-col gap-8 items-start pb-[120px] pt-8 px-8 relative min-h-[calc(100vh+120px)] w-full">
-      {/* Profile Header */}
+    <div className="min-h-screen bg-gray-50">
+      <div className="w-full mx-auto px-2 sm:px-4 lg:px-6 pt-5 pb-8">
+        {/* Rewards & Store Banner - 캐릭터 뽑기 스타일 */}
+        <div className="mb-8 max-w-[95%] mx-auto">
+          <div className="bg-gradient-to-b from-[#6941c6] h-[188.594px] overflow-hidden relative rounded-3xl shadow-lg shrink-0 to-[#10b981] w-full">
+            {/* Decorative circles */}
+            <div className="absolute bg-white/10 right-[-64px] rounded-full size-64 top-[-128px]" />
+            <div className="absolute bg-white/10 left-[-96px] rounded-full size-48 top-[92.59px]" />
 
-      {/* Character Gacha Banner */}
-      <CharacterGachaBanner onNavigate={handleGachaNavigate} />
-
-      {/* Learning Categories */}
-      <div className="relative flex flex-col items-start w-full gap-6 shrink-0">
-        <div className="relative flex flex-col items-start w-full gap-2 shrink-0">
-          <div className="h-[57.594px] relative shrink-0 w-full">
-            <p className="font-bold leading-[57.6px] text-[#101828] text-5xl whitespace-pre">
-              학습 카테고리
-            </p>
+            <div className="absolute flex h-[92.594px] items-center justify-between left-12 top-12 w-[calc(100%-96px)]">
+              <div className="h-[92.594px] relative shrink-0 w-auto">
+                <div className="flex flex-col gap-2 h-[92.594px] items-start relative">
+                  <div className="h-[57.594px] relative shrink-0 w-auto">
+                    <p className="font-bold leading-[57.6px] text-5xl text-white whitespace-pre">
+                      리워드 & 상점
+                    </p>
+                  </div>
+                  <div className="h-[27px] relative shrink-0 w-auto">
+                    <p className="font-normal leading-[27px] text-lg text-white/90 whitespace-pre">
+                      보상을 확인하고 아이템을 구매하세요!
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-row gap-3">
+                <Link
+                  to="/rewards"
+                  className="bg-white h-14 w-32 relative rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 border border-gray-100"
+                >
+                  <img
+                    src="/images/candy_icon(2).png"
+                    alt="리워드"
+                    className="w-5 h-5"
+                  />
+                  <p className="font-semibold leading-6 text-[#6941c6] text-lg whitespace-pre">
+                    리워드
+                  </p>
+                </Link>
+                <Link
+                  to="/store"
+                  className="bg-white h-14 w-32 relative rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 border border-gray-100"
+                >
+                  <img
+                    src="/images/store_icon.png"
+                    alt="상점"
+                    className="w-5 h-5"
+                  />
+                  <p className="font-semibold leading-6 text-[#6941c6] text-lg whitespace-pre">
+                    상점
+                  </p>
+                </Link>
+              </div>
+            </div>
           </div>
-          <div className="h-[27px] relative shrink-0 w-full flex items-center justify-between">
-            <p className="font-normal leading-[27px] text-[#475467] text-lg whitespace-pre">
-              원하는 주제를 선택하고 학습을 시작하세요
-            </p>
+        </div>
+
+        {/* Learning Categories */}
+        <div className="bg-white rounded-lg shadow-sm p-6 max-w-[95%] mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-2">
+                학습 카테고리
+              </h2>
+              <p className="text-lg text-gray-600">
+                원하는 주제를 선택하고 학습을 시작하세요
+              </p>
+            </div>
             <div className="relative">
               <select
                 value={selectedGrade}
                 onChange={(e) => setSelectedGrade(e.target.value)}
-                className="appearance-none bg-white border border-[#d0d5dd] rounded-lg px-4 py-1.5 pr-8 text-[#475467] text-base font-normal leading-6 cursor-pointer hover:border-[#6941c6] focus:outline-none focus:ring-2 focus:ring-[#6941c6] focus:border-transparent"
+                className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-gray-700 text-base font-normal cursor-pointer hover:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
               >
                 <option value="전체">전체</option>
                 <option value="1학년">1학년</option>
@@ -215,7 +250,7 @@ export function DashboardPage() {
               </select>
               <div className="absolute -translate-y-1/2 pointer-events-none right-2 top-1/2">
                 <svg
-                  className="w-4 h-4 text-[#475467]"
+                  className="w-4 h-4 text-gray-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -230,29 +265,30 @@ export function DashboardPage() {
               </div>
             </div>
           </div>
-        </div>
-        <div className="relative grid w-full h-auto grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 shrink-0">
+
           {isLoading ? (
-            <div className="flex items-center justify-center py-12 col-span-full">
-              <p className="text-[#475467] text-lg">로딩 중...</p>
+            <div className="flex items-center justify-center py-12">
+              <p className="text-gray-600 text-lg">로딩 중...</p>
             </div>
           ) : quizCategories.length === 0 ? (
-            <div className="flex items-center justify-center py-12 col-span-full">
-              <p className="text-[#475467] text-lg">챕터가 없습니다.</p>
+            <div className="flex items-center justify-center py-12">
+              <p className="text-gray-600 text-lg">챕터가 없습니다.</p>
             </div>
           ) : (
-            quizCategories.map((category, index) => (
-              <QuizCategoryCard
-                key={`${category.id}-${category.title}-${index}`}
-                title={category.title}
-                description={category.description}
-                difficulty={category.difficulty}
-                problemCount={category.problemCount}
-                color={category.color}
-                grade={category.grade}
-                onStart={() => handleStartQuiz(category.id, category.title)}
-              />
-            ))
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+              {quizCategories.map((category, index) => (
+                <QuizCategoryCard
+                  key={`${category.id}-${category.title}-${index}`}
+                  title={category.title}
+                  description={category.description}
+                  difficulty={category.difficulty}
+                  problemCount={category.problemCount}
+                  color={category.color}
+                  grade={category.grade}
+                  onStart={() => handleStartQuiz(category.id, category.title)}
+                />
+              ))}
+            </div>
           )}
         </div>
       </div>

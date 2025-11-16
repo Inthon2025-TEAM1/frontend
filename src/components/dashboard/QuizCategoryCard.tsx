@@ -95,7 +95,7 @@ export function QuizCategoryCard({
   };
 
   return (
-    <div className="bg-[#f8f4ff] flex flex-col items-start pb-0 pt-8 px-8 relative rounded-3xl shrink-0 h-full">
+    <div className="bg-[#f8f4ff] flex flex-col items-start pb-0 pt-8 px-8 relative rounded-3xl shrink-0 h-full w-full">
       <div className="flex flex-col gap-6 h-full items-start relative shrink-0 w-full">
         <div className="h-14 relative shrink-0 w-full">
           <div className="flex h-14 items-start justify-between relative w-full">
@@ -140,8 +140,8 @@ export function QuizCategoryCard({
         </div>
         <div className="flex-1 min-h-0 min-w-0 relative shrink-0 w-full">
           <div className="flex flex-col gap-2 h-full items-start relative w-full">
-            <div className="h-[39px] relative shrink-0 w-full">
-              <p className="font-semibold leading-[39px] text-[#101828] text-3xl whitespace-pre">
+            <div className="min-h-[39px] relative shrink-0 w-full">
+              <p className="font-semibold leading-[39px] text-[#101828] text-3xl break-words">
                 {title}
               </p>
             </div>

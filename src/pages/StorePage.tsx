@@ -5,6 +5,7 @@ import {
   categoryLabels,
   rarityColors,
   rarityLabels,
+  getItemImageUrl,
   type ItemCategory,
   type StoreItem,
 } from "../mocks/storeMock";
@@ -242,8 +243,27 @@ export function StorePage() {
                 </div>
 
                 {/* Item Icon */}
-                <div className="flex justify-center">
-                  <span className="text-7xl">{item.icon}</span>
+                <div className="flex justify-center items-center min-h-[128px]">
+                  {getItemImageUrl(item) ? (
+                    <img 
+                      src={getItemImageUrl(item)!}
+                      alt={item.name}
+                      className="w-32 h-32 object-contain"
+                      onError={(e) => {
+                        // 이미지 로드 실패 시 이모지로 폴백
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const fallback = target.nextElementSibling as HTMLElement;
+                        if (fallback) fallback.style.display = 'block';
+                      }}
+                    />
+                  ) : null}
+                  <span 
+                    className={`text-7xl ${getItemImageUrl(item) ? 'hidden' : ''}`}
+                    style={{ display: getItemImageUrl(item) ? 'none' : 'block' }}
+                  >
+                    {item.icon}
+                  </span>
                 </div>
 
                 {/* Item Info */}
