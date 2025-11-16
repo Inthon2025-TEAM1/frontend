@@ -32,23 +32,29 @@ export function ParentDashboardPage() {
   const handleAddChild = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newChildEmail.trim()) {
+      // 사전 검증
+      if(user?.email === newChildEmail.trim()){
+        alert("본인의 이메일은 자녀로 추가할 수 없습니다.");
+        return;
+      }
+
       try {
-        if(user?.email === newChildEmail.trim()){
-          alert("본인의 이메일은 자녀로 추가할 수 없습니다.");
-          return;
-        }
         const newChild = await addChild(newChildEmail);
+
+        // 중복 체크 (API 성공 후)
         if(children.find((child) => child.id === newChild.id)){
           alert("이미 추가된 자녀입니다.");
           return;
         }
+
+        // API 성공 시에만 상태 업데이트
         setChildren([...children, newChild]);
         setNewChildEmail("");
         setShowAddForm(false);
         alert("자녀가 추가되었습니다!");
       } catch (error) {
         console.error("Failed to add child:", error);
-        
+        // 에러 시 상태 업데이트 없음
         alert("자녀 추가에 실패했습니다. 이메일을 확인해주세요.");
       }
     }
