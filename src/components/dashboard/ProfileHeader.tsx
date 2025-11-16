@@ -2,15 +2,15 @@ import { useAuth } from "../../hooks/useAuth";
 
 // 이미지 경로
 const imgIcon = "/images/profile-icon.png";
-const imgIcon1 = "/images/candy-icon.png";
-const imgIcon2 = "/images/logout-icon.png";
+// const imgIcon1 = "/images/candy-icon.png";
+// const imgIcon2 = "/images/logout-icon.png";
 
 interface ProfileHeaderProps {
   candyCount?: number;
   onLogout: () => void;
 }
 
-export function ProfileHeader({ candyCount = 42, onLogout }: ProfileHeaderProps) {
+export function ProfileHeader({ candyCount: _candyCount = 42, onLogout: _onLogout }: ProfileHeaderProps) {
   const { user } = useAuth();
   const displayName = user?.displayName || user?.email?.split("@")[0] || "사용자";
 
