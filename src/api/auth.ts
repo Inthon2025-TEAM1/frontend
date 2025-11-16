@@ -241,6 +241,12 @@ export async function addChild(childEmail: string): Promise<Child> {
     method: "POST",
     body: JSON.stringify({ childEmail }),
   });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "자녀 추가에 실패했습니다.");
+  }
+
   return await response.json();
 }
 
