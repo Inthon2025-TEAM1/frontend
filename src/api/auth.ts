@@ -136,6 +136,9 @@ export async function getProfile() {
  */
 export async function fetchCandyCount(): Promise<{ candy: number }> {
   const response = await authFetch("/api/user/candy");
+  if (!response.ok) {
+    throw new Error(`Failed to fetch candy count: ${response.status} ${response.statusText}`);
+  }
   return await response.json();
 }
 

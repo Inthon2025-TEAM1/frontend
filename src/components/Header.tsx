@@ -26,13 +26,31 @@ export function Header() {
       if (user) {
         try {
           const data = await fetchCandyCount();
-          setCandyCount(data.candy);
+          console.log("Candy count data:", data);
+          if (data && typeof data.candy === 'number') {
+            setCandyCount(data.candy);
+          } else {
+            console.error("Invalid candy count data format:", data);
+          }
         } catch (error) {
           console.error("Failed to fetch candy count:", error);
         }
+      } else {
+        setCandyCount(0);
       }
     };
     loadCandyCount();
+
+    // 페이지 포커스 시 캔디 카운트 갱신
+    const handleFocus = () => {
+      if (user) {
+        loadCandyCount();
+      }
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
   }, [user]);
   
   const handleLogout = async () => {
