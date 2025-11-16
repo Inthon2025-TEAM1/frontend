@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getChildren, addChild, removeChild, type Child } from "../../api/auth";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function ParentDashboardPage() {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ export function ParentDashboardPage() {
   const [newChildEmail, setNewChildEmail] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const {user} = useAuth();
 
   // 자녀 목록 불러오기
   const loadChildren = async () => {
@@ -31,6 +33,10 @@ export function ParentDashboardPage() {
     e.preventDefault();
     if (newChildEmail.trim()) {
       try {
+        if(user?.email === newChildEmail.trim()){
+          alert("본인의 이메일은 자녀로 추가할 수 없습니다.");
+          return;
+        }
         const newChild = await addChild(newChildEmail);
         if(children.find((child) => child.id === newChild.id)){
           alert("이미 추가된 자녀입니다.");
